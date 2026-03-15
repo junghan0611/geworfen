@@ -1,0 +1,13 @@
+# Clerk
+.clerk/
+.cpcache/
+public/
+
+# Clojure
+.nrepl-port
+target/
+
+# Editor
+.vscode/
+.claude/
+.direnv/
