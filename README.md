@@ -1,69 +1,80 @@
-# geworfen 게보르펜
+# geworfen
 
-> 던져진 것들 — 한 인간의 존재 데이터를 가공 없이 드러내는 WebTUI 뷰어
+> **thrown into the world** — a WebTUI viewer that renders one human's raw existence data, unprocessed and transparent.
 
-기획을 던지는 자가 자기 자신의 던짐 속에 던져져 있다.  
-— Heidegger
+*The thrower of the project is thrown in his own throw.*  
+*— Heidegger*
 
-## 무엇인가
+## What Is This
 
-`www.junghanacs.com` = **시간과정신의방의 웹 뷰어**.
+A real-time web dashboard for `www.junghanacs.com` — not a static blog, but a transparent data nexus of one human's daily life, co-lived with AI agents.
 
-정적 페이지가 아닌, 한 인간의 투명한 데이터 연결체.
-대문은 org-agenda 문. 그 안에 존재의 데이터와 에이전트들이 시간 축에서 살아있다.
+The front door is an org-agenda timeline. Behind it: existence data and agents, alive on the time axis.
 
-## 무엇을 보여주는가
+## What It Shows
 
-| 데이터 | 규모 | 형식 |
-|--------|------|------|
-| Denote 노트 | 3,000+ | .org |
-| 수면/심박/시간추적 | 4,214+ | SQLite |
-| 서지 데이터 | 7,000+ | .bib |
-| 일일 저널 | 696일+ | .org |
-| Git 커밋 | 14,000+ | git |
-| 디지털 가든 | 1,400+ | .md |
+| Data | Scale | Format |
+|------|-------|--------|
+| Denote notes | 3,000+ | .org |
+| Sleep / heart rate / time-tracking | 4,214+ | SQLite |
+| Bibliography | 7,000+ | .bib |
+| Daily journal | 696+ days | .org |
+| Git commits | 14,000+ | git |
+| Digital garden | 1,400+ | .md |
 
-## 기술 스택
+## Architecture
 
 ```
-[프론트]                      [백엔드]                    [데이터]
-WebTUI CSS                    Clojure 서버                Emacs daemon
-+ SF 터미널 미학              (Babashka 또는 Ring)        emacsclient
-+ ASCII box org-agenda        /api/agenda                 ~/org/
-+ SSE 실시간 갱신             /api/events (SSE)           lifetract.db
-                              /api/trigger                .bib
+[Frontend]                    [Backend]                   [Data]
+WebTUI CSS (CDN)              Clojure server              Emacs daemon
++ SF terminal aesthetics      (Ring / http-kit)            emacsclient
++ ASCII box org-agenda        GET  /api/agenda             ~/org/
++ SSE real-time updates       GET  /api/events (SSE)       lifetract.db
+                              POST /api/trigger            .bib
 ```
 
-## 디자인 — SF 터미널 미학
+Visitors hit a web page → `fetch /api/agenda` → Clojure calls `emacsclient` once → cached.  
+Agent stamps → `curl /api/trigger` → SSE broadcast → all visitors update.
 
-**레트로가 아니다.** TRON, Blade Runner의 미래형 터미널.
+## Design — SF Terminal Aesthetics
 
-- 색상: 발광 네온 그린 `#50fa7b`, 시안 `#8be9fd`, 깊은 다크 `#0a0a1a`
-- 폰트: Geist Pixel (제목) + Geist Mono + Pretendard (본문)
-- 레이아웃: `ch`/`lh` 캐릭터 기반 그리드
+**Not retro.** TRON. Blade Runner. A future terminal.
 
-## 개발
+- Colors: neon green `#50fa7b`, cyan `#8be9fd`, deep dark `#0a0a1a`
+- Fonts: Geist Pixel (headings) + Geist Mono + Pretendard (body)
+- Layout: `ch`/`lh` character-based grid — org-agenda native
+
+> *"A sufficiently advanced information ecosystem takes the form of the cleanest text terminal."*
+
+## Development
 
 ```bash
-nix develop          # 개발 환경 진입
-clj -M:dev           # nREPL 시작
-bb dev               # Babashka 개발 서버 (예정)
+nix develop          # enter dev environment
+clj -M:dev           # start nREPL (CIDER)
+clj -M:run           # start production server
+bb dev               # dev server via Babashka
 ```
 
-## 이름의 유래
+## Name
 
-**geworfen** [ɡəˈvɔʁfn̩] = 게보르펜 = "던져진"
+**geworfen** [ɡəˈvɔʁfn̩] — German for *"thrown"*
 
-하이데거의 Geworfenheit(던져짐/피투성)에서.
-org-agenda에 찍히는 스탬프 하나하나가 세계 안에 던져진 사실성(Faktizität).
-가공 없이 던져져 있는 날것의 데이터. 그것이 이 프로젝트다.
+From Heidegger's *Geworfenheit* (thrownness): the fact that human existence is always already thrown into a world it did not choose. Every timestamp stamped by an agent into org-agenda is a facticity (*Faktizität*) — thrown into the world, raw and unprocessed. That's this project.
 
-## 링크
+| Term | Meaning |
+|------|---------|
+| Geworfenheit | thrownness — the condition of being thrown |
+| geworfen | thrown — past participle |
+| werfen | to throw — infinitive |
+| Dasein | being-there — human existence |
+| Faktizität | facticity — the already-so |
 
-- 📚 [디지털 가든](https://notes.junghanacs.com)
+## Links
+
+- 📚 [Digital Garden](https://notes.junghanacs.com)
 - 🐙 [GitHub](https://github.com/junghanacs)
 - 🧵 [Threads](https://www.threads.net/@junghanacs)
 
-## 라이선스
+## License
 
 MIT

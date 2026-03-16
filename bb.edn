@@ -1,9 +1,9 @@
 {:tasks
- {dev  {:doc "개발 서버 시작"
+ {dev  {:doc "Start dev server"
         :task (shell "clj -M:dev")}
 
-  run  {:doc "프로덕션 서버 시작"
+  run  {:doc "Start production server"
         :task (shell "clj -M:run")}
 
-  repl {:doc "nREPL 시작 (CIDER)"
+  repl {:doc "Start nREPL (CIDER)"
         :task (shell "clj -M:dev")}}}

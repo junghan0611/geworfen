@@ -1,5 +1,5 @@
 (ns geworfen.server
-  "HTTP 서버 — http-kit + reitit"
+  "HTTP server — http-kit + reitit"
   (:require [org.httpkit.server :as http]
             [reitit.ring :as ring]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
@@ -22,18 +22,18 @@
                   (assoc-in site-defaults [:security :anti-forgery] false)]]}))
 
 (defn start!
-  "서버 시작"
+  "Start the server on the given port"
   [{:keys [port] :or {port 8080}}]
   (when @server
     (@server)
     (reset! server nil))
   (reset! server (http/run-server app {:port port}))
-  (println (str "서버 리스닝: " port)))
+  (println (str "Server listening on port " port)))
 
 (defn stop!
-  "서버 중지"
+  "Stop the server"
   []
   (when @server
     (@server)
     (reset! server nil)
-    (println "서버 중지됨")))
+    (println "Server stopped")))

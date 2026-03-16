@@ -1,23 +1,23 @@
 /*
- * geworfen — SF 터미널 미학
- * 레트로가 아니다. TRON, Blade Runner의 미래형 터미널.
+ * geworfen — SF terminal aesthetics
+ * Not retro. TRON. Blade Runner. A future terminal.
  */
 
 :root {
-  /* SF 발광 색상 체계 */
+  /* SF glow color system */
   --gw-bg:           #0a0a1a;
   --gw-bg-surface:   #0f0f2a;
   --gw-text:         #e0e0e0;
   --gw-text-dim:     #6a6a8a;
-  --gw-accent:       #50fa7b;    /* 네온 그린 */
-  --gw-accent-blue:  #8be9fd;    /* 시안 */
-  --gw-accent-purple:#c792ea;    /* 보라 */
+  --gw-accent:       #50fa7b;    /* neon green */
+  --gw-accent-blue:  #8be9fd;    /* cyan */
+  --gw-accent-purple:#c792ea;    /* purple */
   --gw-border:       rgba(139, 233, 253, 0.2);
   --gw-glow:         0 0 10px rgba(80, 250, 123, 0.3);
 
-  /* 폰트 */
+  /* Fonts */
   --gw-font-mono:    'Geist Mono', 'Pretendard', monospace;
-  --gw-font-pixel:   'Geist Mono', monospace; /* Geist Pixel 사용 시 교체 */
+  --gw-font-pixel:   'Geist Mono', monospace; /* swap for Geist Pixel when available */
 }
 
 html[data-theme="dark"] {
@@ -46,13 +46,13 @@ pre {
   color: var(--gw-text-dim);
 }
 
-/* 발광 엣지 */
+/* Glow edge */
 .glow {
   box-shadow: var(--gw-glow);
   border-color: var(--gw-accent);
 }
 
-/* 에이전트 스탬프 엔트리 */
+/* Agent stamp entry */
 .stamp-entry {
   border-left: 2px solid var(--gw-accent-blue);
   padding-left: 1ch;

@@ -2,11 +2,11 @@
   (:require [geworfen.server :as server]))
 
 (comment
-  ;; 서버 시작
+  ;; Start server
   (server/start! {:port 8080})
 
-  ;; 서버 중지
+  ;; Stop server
   (server/stop!)
 
-  ;; 포트 변경해서 시작
+  ;; Start on a different port
   (server/start! {:port 3000}))
