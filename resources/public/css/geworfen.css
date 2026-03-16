@@ -1,0 +1,73 @@
+/*
+ * geworfen — SF 터미널 미학
+ * 레트로가 아니다. TRON, Blade Runner의 미래형 터미널.
+ */
+
+:root {
+  /* SF 발광 색상 체계 */
+  --gw-bg:           #0a0a1a;
+  --gw-bg-surface:   #0f0f2a;
+  --gw-text:         #e0e0e0;
+  --gw-text-dim:     #6a6a8a;
+  --gw-accent:       #50fa7b;    /* 네온 그린 */
+  --gw-accent-blue:  #8be9fd;    /* 시안 */
+  --gw-accent-purple:#c792ea;    /* 보라 */
+  --gw-border:       rgba(139, 233, 253, 0.2);
+  --gw-glow:         0 0 10px rgba(80, 250, 123, 0.3);
+
+  /* 폰트 */
+  --gw-font-mono:    'Geist Mono', 'Pretendard', monospace;
+  --gw-font-pixel:   'Geist Mono', monospace; /* Geist Pixel 사용 시 교체 */
+}
+
+html[data-theme="dark"] {
+  background-color: var(--gw-bg);
+  color: var(--gw-text);
+}
+
+body {
+  font-family: var(--gw-font-mono);
+  max-width: 80ch;
+  margin: 2lh auto;
+  padding: 0 2ch;
+}
+
+h1, h2, h3 {
+  color: var(--gw-accent);
+  text-shadow: var(--gw-glow);
+}
+
+.tui-box {
+  border-color: var(--gw-border);
+  background-color: var(--gw-bg-surface);
+}
+
+pre {
+  color: var(--gw-text-dim);
+}
+
+/* 발광 엣지 */
+.glow {
+  box-shadow: var(--gw-glow);
+  border-color: var(--gw-accent);
+}
+
+/* 에이전트 스탬프 엔트리 */
+.stamp-entry {
+  border-left: 2px solid var(--gw-accent-blue);
+  padding-left: 1ch;
+  margin: 0.5lh 0;
+}
+
+.stamp-entry .time {
+  color: var(--gw-accent-purple);
+}
+
+.stamp-entry .text {
+  color: var(--gw-text);
+}
+
+.stamp-entry .tags {
+  color: var(--gw-text-dim);
+  font-size: 0.85em;
+}

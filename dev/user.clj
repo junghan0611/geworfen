@@ -1,18 +1,12 @@
 (ns user
-  (:require [nextjournal.clerk :as clerk]))
+  (:require [geworfen.server :as server]))
 
 (comment
-  ;; Start Clerk with file watcher, open browser
-  (clerk/serve! {:browse? true
-                 :port 7777
-                 :watch-paths ["notebooks" "src"]})
+  ;; 서버 시작
+  (server/start! {:port 8080})
 
-  ;; Show a specific notebook
-  (clerk/show! "notebooks/index.clj")
+  ;; 서버 중지
+  (server/stop!)
 
-  ;; Build static HTML (for testing)
-  (clerk/build! {:paths ["notebooks/index.clj"]
-                 :out-path "public/clerk"})
-
-  ;; Clear cache
-  (clerk/clear-cache!))
+  ;; 포트 변경해서 시작
+  (server/start! {:port 3000}))

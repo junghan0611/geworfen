@@ -1,5 +1,5 @@
 {
-  description = "being-viewer — Clerk 기반 존재 데이터 뷰어";
+  description = "geworfen — 존재 데이터 WebTUI 뷰어";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -20,13 +20,15 @@
           ];
 
           shellHook = ''
-            echo "🏠 being-viewer 개발 환경"
-            echo "========================"
+            echo "게보르펜 — geworfen 개발 환경"
+            echo "================================"
             echo "Clojure: $(clojure --version 2>&1)"
             echo "Java:    $(java -version 2>&1 | head -1)"
+            echo "bb:      $(bb --version 2>&1)"
             echo ""
-            echo "  clj -M:dev            # nREPL 시작"
-            echo "  clojure -M -e \"(require '[nextjournal.clerk :as clerk]) (clerk/serve! {:browse? true :port 7777 :watch-paths [\\\"notebooks\\\" \\\"src\\\"]})\""
+            echo "  bb dev             # 개발 서버"
+            echo "  bb repl            # nREPL (CIDER)"
+            echo "  clj -M:run         # 프로덕션 서버"
             echo ""
           '';
         };

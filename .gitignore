@@ -1,13 +1,17 @@
-# Clerk
-.clerk/
-.cpcache/
-public/
-
 # Clojure
+.cpcache/
 .nrepl-port
 target/
+
+# Nix
+.direnv/
+result
 
 # Editor
 .vscode/
 .claude/
-.direnv/
+.lsp/
+.clj-kondo/
+
+# Build
+public/build/
