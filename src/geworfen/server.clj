@@ -6,6 +6,7 @@
             [ring.util.response :as resp]
             [ring.middleware.params :refer [wrap-params]]
             [geworfen.agenda :as agenda]
+            [geworfen.stats :as stats]
             [jsonista.core :as json]))
 
 (defonce ^:private server (atom nil))
@@ -20,6 +21,14 @@
      :headers {"Content-Type" "application/json; charset=utf-8"
                "Access-Control-Allow-Origin" "*"}
      :body (json/write-value-as-string data)}))
+
+(defn- stats-handler
+  "GET /api/stats — existence data counts"
+  [_request]
+  {:status 200
+   :headers {"Content-Type" "application/json; charset=utf-8"
+             "Access-Control-Allow-Origin" "*"}
+   :body (json/write-value-as-string (stats/collect))})
 
 (defn- trigger-handler
   "POST /api/trigger — agent stamps, invalidate today's cache"
@@ -39,6 +48,7 @@
     [["/"          {:get {:handler index-handler}}]
      ["/api"
       ["/agenda"  {:get {:handler agenda-handler}}]
+      ["/stats"   {:get {:handler stats-handler}}]
       ["/trigger" {:post {:handler trigger-handler}}]]])
    (ring/routes
     (ring/create-resource-handler {:path "/"})

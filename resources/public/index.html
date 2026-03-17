@@ -149,13 +149,8 @@
     <column class="panel" box-="square" pad-="1 0">
       <span class="panel-title">existence data</span>
       <div is-="separator"></div>
-      <column pad-="0 0">
-        <div class="stat-row"><span class="stat-label">notes</span><span class="stat-value">3,156</span></div>
-        <div class="stat-row"><span class="stat-label">bibliography</span><span class="stat-value">7,000+</span></div>
-        <div class="stat-row"><span class="stat-label">commits</span><span class="stat-value">14,000+</span></div>
-        <div class="stat-row"><span class="stat-label">journal</span><span class="stat-value">696d</span></div>
-        <div class="stat-row"><span class="stat-label">health</span><span class="stat-value">4,214</span></div>
-        <div class="stat-row"><span class="stat-label">garden</span><span class="stat-value">1,400+</span></div>
+      <column id="stats-data" pad-="0 0">
+        <span style="color:var(--overlay1);padding:0 1ch">loading...</span>
       </column>
     </column>
 
@@ -167,6 +162,7 @@
         <a href="https://github.com/junghanacs">› github</a>
         <a href="https://www.threads.net/@junghanacs">› threads</a>
         <a href="https://github.com/junghan0611/geworfen">› source</a>
+
       </column>
     </column>
 
@@ -311,6 +307,26 @@ document.addEventListener('keydown', (e) => {
 
 setInterval(() => { if (fmt(currentDate) === fmt(new Date())) fetchAgenda(); }, 60000);
 fetchAgenda();
+
+async function fetchStats() {
+  try {
+    const res = await fetch('/api/stats');
+    const d = await res.json();
+    const el = document.getElementById('stats-data');
+    const f = n => n.toLocaleString();
+    el.innerHTML = [
+      ['notes', f(d.notes)],
+      ['bibliography', f(d.bibliography)],
+      ['commits', f(d.commits)],
+      ['journal', f(d.journal) + 'd'],
+      ['health', f(d.health)],
+      ['garden', f(d.garden)],
+    ].map(([k,v]) =>
+      `<div class="stat-row"><span class="stat-label">${k}</span><span class="stat-value">${v}</span></div>`
+    ).join('');
+  } catch(e) {}
+}
+fetchStats();
 </script>
 
 </body>
