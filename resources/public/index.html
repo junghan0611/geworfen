@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>geworfen — thrown into the world</title>
 
-  <!-- WebTUI CSS -->
+  <!-- WebTUI -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui@latest/dist/webtui.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui-theme-catppuccin@latest/dist/theme-catppuccin.min.css">
 
@@ -15,319 +15,453 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 
   <style>
+    /* ═══════════════════════════════════════════════════
+       TRON / FUI Override — SF Terminal, not retro
+       ═══════════════════════════════════════════════════ */
     :root {
       --font-family: 'JetBrains Mono', monospace;
-      --font-size: 15px;
-      --line-height: 1.4;
-      --gw-glow: 0 0 8px rgba(166, 227, 161, 0.25);
+      --font-size: 14px;
+      --line-height: 1.45;
+
+      /* TRON palette */
+      --gw-cyan:   #8be9fd;
+      --gw-green:  #50fa7b;
+      --gw-purple: #c792ea;
+      --gw-orange: #fab387;
+      --gw-red:    #f38ba8;
+      --gw-dim:    #44475a;
+      --gw-deep:   #0a0a1a;
+
+      /* Glow */
+      --gw-glow-green: 0 0 8px rgba(80, 250, 123, 0.3);
+      --gw-glow-cyan:  0 0 8px rgba(139, 233, 253, 0.3);
+      --gw-glow-border: 0 0 12px rgba(139, 233, 253, 0.15);
+    }
+
+    body, html {
+      background: var(--gw-deep) !important;
     }
 
     body {
-      max-width: 96ch;
-      margin: 1lh auto;
+      max-width: 100ch;
+      margin: 2lh auto;
       padding: 0 2ch;
     }
 
-    /* ── Header ── */
-    #header {
-      --box-border-color: var(--green);
-    }
-    #header h1 {
-      color: var(--green);
-      text-shadow: var(--gw-glow);
-      display: inline;
-    }
-    #header .subtitle {
-      color: var(--subtext0);
+    /* ═══ Outer FUI Frame ═══ */
+    #frame {
+      --box-border-color: rgba(139, 233, 253, 0.25);
+      box-shadow: var(--gw-glow-border);
+      background: rgba(10, 10, 26, 0.95);
     }
 
-    /* ── Navigation ── */
-    #nav { margin: 1lh 0; }
-    #nav button { cursor: pointer; min-width: 4ch; }
-    #date-display {
-      color: var(--green);
-      font-weight: 700;
-      text-shadow: var(--gw-glow);
+    /* ═══ Title ═══ */
+    #title-row h1 {
+      color: var(--gw-cyan);
+      text-shadow: var(--gw-glow-cyan);
+      font-size: 1.2em;
     }
-    #week-badge { color: var(--overlay2); }
-    #entry-count { color: var(--overlay1); }
-
-    /* ── Agenda entries ── */
-    #agenda {
-      --box-border-color: var(--surface1);
-      min-height: 10lh;
-    }
-
-    .entry {
-      padding: 0 1ch;
-      display: flex;
-      gap: 1ch;
-    }
-    .entry:hover {
-      background: var(--surface0);
-    }
-
-    .time {
-      color: var(--mauve);
-      min-width: 6ch;
-      flex-shrink: 0;
-    }
-    .source {
-      color: var(--blue);
-      min-width: 11ch;
-      flex-shrink: 0;
-    }
-    .text {
-      color: var(--text);
-      flex-grow: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .tags {
+    #title-row .sub {
       color: var(--overlay1);
       font-size: 0.85em;
-      flex-shrink: 0;
-      max-width: 24ch;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
-    .separator {
+    /* ═══ Emacs Buffer ═══ */
+    #emacs-window {
+      --box-border-color: rgba(139, 233, 253, 0.2);
+      box-shadow: inset 0 0 20px rgba(10, 10, 26, 0.5), var(--gw-glow-border);
+      background: rgba(15, 15, 35, 0.9);
+    }
+
+    /* Header bar — like Emacs buffer tab */
+    #buffer-header {
+      background: var(--surface0);
+      padding: 0 1ch;
+      height: 1lh;
+      display: flex;
+      align-items: center;
+      gap: 1ch;
+      border-bottom: 1px solid rgba(139, 233, 253, 0.15);
+    }
+    #buffer-header .buf-name {
+      color: var(--gw-green);
+      font-weight: 700;
+    }
+    #buffer-header .buf-info {
+      color: var(--overlay1);
+    }
+
+    /* Agenda content area */
+    #agenda-body {
+      padding: 0.5lh 0;
+      min-height: 14lh;
+      overflow-x: hidden;
+    }
+
+    /* Mode line — Emacs style */
+    #mode-line {
+      background: var(--surface1);
+      color: var(--subtext0);
+      padding: 0 1ch;
+      height: 1lh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      border-top: 1px solid rgba(139, 233, 253, 0.15);
+    }
+    #mode-line .ml-rw { color: var(--gw-cyan); }
+    #mode-line .ml-buf { color: var(--gw-green); font-weight: 700; }
+    #mode-line .ml-mode { color: var(--gw-purple); }
+    #mode-line .ml-fill { flex-grow: 1; overflow: hidden; }
+    #mode-line .ml-pos { color: var(--overlay2); }
+
+    /* ═══ Org-agenda entry rendering ═══ */
+    .ag-line {
+      padding: 0 1ch;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ag-line:hover {
+      background: rgba(139, 233, 253, 0.05);
+    }
+
+    /* Header line */
+    .ag-header {
+      color: var(--overlay2);
+      padding: 0 1ch;
+    }
+    .ag-date {
+      color: var(--gw-cyan);
+      font-weight: 700;
+      text-shadow: var(--gw-glow-cyan);
+      padding: 0 1ch;
+    }
+
+    /* Category (Agent(O), Agent(T), Human, Diary) */
+    .ag-cat {
+      color: var(--blue);
+      display: inline-block;
+      min-width: 12ch;
+    }
+    .ag-cat-oracle { color: var(--gw-purple); }
+    .ag-cat-thinkpad { color: var(--blue); }
+    .ag-cat-human { color: var(--gw-green); }
+
+    /* Time + dots */
+    .ag-time {
+      color: var(--gw-orange);
+      display: inline-block;
+      min-width: 6ch;
+    }
+    .ag-dots {
+      color: var(--gw-dim);
+    }
+
+    /* Entry text */
+    .ag-text { color: var(--text); }
+
+    /* Tags */
+    .ag-tags {
+      color: var(--overlay1);
+      font-size: 0.9em;
+    }
+
+    /* Separator */
+    .ag-sep {
       color: var(--surface2);
       padding: 0 1ch;
     }
-    .now-line {
-      color: var(--green);
+
+    /* Now line */
+    .ag-now {
+      color: var(--gw-green);
       font-weight: 700;
-      text-shadow: var(--gw-glow);
+      text-shadow: var(--gw-glow-green);
       padding: 0 1ch;
+      background: rgba(80, 250, 123, 0.05);
     }
 
-    #loading { color: var(--overlay2); padding: 1lh 1ch; }
-
-    /* ── Sidebar stats ── */
-    #stats {
-      --box-border-color: var(--surface1);
+    /* Empty day */
+    .ag-empty {
+      color: var(--overlay1);
+      padding: 2lh 1ch;
+      text-align: center;
     }
+
+    /* ═══ Navigation ═══ */
+    #nav {
+      margin: 0.5lh 0;
+    }
+    #nav button {
+      cursor: pointer;
+      min-width: 4ch;
+      border-color: rgba(139, 233, 253, 0.2);
+    }
+    #nav button:hover {
+      border-color: var(--gw-cyan);
+      box-shadow: var(--gw-glow-cyan);
+    }
+    #date-display {
+      color: var(--gw-cyan);
+      text-shadow: var(--gw-glow-cyan);
+    }
+    #entry-count { color: var(--overlay1); }
+
+    /* ═══ Bottom panels ═══ */
+    #panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1ch;
+      margin-top: 0.5lh;
+    }
+
+    .panel {
+      --box-border-color: rgba(139, 233, 253, 0.12);
+      background: rgba(15, 15, 35, 0.6);
+    }
+    .panel-title {
+      color: var(--gw-cyan);
+      text-shadow: var(--gw-glow-cyan);
+      font-size: 0.85em;
+      padding: 0 1ch;
+      text-transform: uppercase;
+      letter-spacing: 0.1ch;
+    }
+    .panel a {
+      color: var(--gw-cyan);
+      text-decoration: none;
+    }
+    .panel a:hover {
+      color: var(--gw-green);
+      text-shadow: var(--gw-glow-green);
+    }
+
     .stat-row {
       display: flex;
       justify-content: space-between;
       padding: 0 1ch;
     }
     .stat-label { color: var(--subtext0); }
-    .stat-value { color: var(--peach); font-weight: 700; }
+    .stat-value { color: var(--gw-orange); }
 
-    /* ── Links ── */
-    #links {
-      --box-border-color: var(--surface1);
-    }
-    #links a {
-      color: var(--blue);
-      text-decoration: none;
-    }
-    #links a:hover {
-      color: var(--lavender);
-    }
+    .key-row { padding: 0 1ch; color: var(--overlay1); }
+    .key-row kbd { color: var(--gw-cyan); }
 
-    /* ── Statusline ── */
-    #statusline {
-      margin-top: 1lh;
-    }
+    /* ═══ Statusline (Vim-style) ═══ */
+    #statusline { margin-top: 0.5lh; }
 
-    /* ── Layout ── */
-    #main-grid {
-      display: grid;
-      grid-template-columns: 1fr 24ch;
-      gap: 0 1ch;
+    /* ═══ Scan line effect (subtle) ═══ */
+    #frame::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(139, 233, 253, 0.008) 2px,
+        rgba(139, 233, 253, 0.008) 4px
+      );
+      z-index: 1;
     }
 
-    #agenda-col { grid-column: 1; }
-    #side-col {
-      grid-column: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    /* ── Mobile ── */
+    /* ═══ Mobile ═══ */
     @media (max-width: 72ch) {
-      #main-grid {
-        grid-template-columns: 1fr;
-      }
-      #side-col {
-        grid-column: 1;
-        margin-top: 1lh;
-      }
-      .tags { display: none; }
-      .source { min-width: 5ch; }
+      #panels { grid-template-columns: 1fr; }
+      .ag-tags { display: none; }
+      .ag-cat { min-width: 5ch; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══ Header ═══ -->
-  <column id="header" box-="double" pad-="1 2">
-    <row gap-="1" align-="center">
-      <h1>geworfen</h1>
-      <span is-="badge" variant-="green" style="--badge-text: var(--crust)">v0.1</span>
-    </row>
-    <span class="subtitle">thrown into the world — one human's raw existence data</span>
-  </column>
+<!-- ═══════════════════════════════════════════
+     FUI Frame
+     ═══════════════════════════════════════════ -->
+<column id="frame" box-="double" pad-="1 2" style="position: relative;">
 
-  <!-- ═══ Date Nav ═══ -->
+  <!-- Title -->
+  <row id="title-row" gap-="1" align-="center" pad-="0 0">
+    <h1>geworfen</h1>
+    <span is-="badge" variant-="green" style="--badge-text: var(--gw-deep)">v0.1</span>
+    <span class="sub">thrown into the world</span>
+  </row>
+
+  <div is-="separator" style="--separator-color: rgba(139, 233, 253, 0.15)"></div>
+
+  <!-- Date Navigation -->
   <row id="nav" gap-="1" align-="center">
-    <button onclick="go(-7)" variant-="background1">«w</button>
+    <button onclick="go(-7)" variant-="background1">«</button>
     <button onclick="go(-1)" variant-="background1">‹</button>
-    <button onclick="goToday()" variant-="green" style="--badge-text: var(--crust)">today</button>
+    <button onclick="goToday()">today</button>
     <button onclick="go(+1)" variant-="background1">›</button>
-    <button onclick="go(+7)" variant-="background1">w»</button>
+    <button onclick="go(+7)" variant-="background1">»</button>
     <span id="date-display"></span>
-    <span id="week-badge"></span>
     <span id="entry-count"></span>
   </row>
 
-  <!-- ═══ Main Grid ═══ -->
-  <div id="main-grid">
+  <!-- ═══ Emacs Buffer ═══ -->
+  <column id="emacs-window" box-="square">
 
-    <!-- Left: Agenda -->
-    <column id="agenda-col">
-      <column id="agenda" box-="square" pad-="1 0">
-        <row pad-="0 1">
-          <span is-="badge" variant-="background1" style="--badge-text: var(--green)">org-agenda</span>
-        </row>
-        <div is-="separator" style="--separator-color: var(--surface1)"></div>
-        <column id="entries">
-          <span id="loading">connecting to emacs agent-server...</span>
-        </column>
+    <!-- Buffer header -->
+    <div id="buffer-header">
+      <span class="buf-name">*Org Agenda(Day)*</span>
+      <span class="buf-info" id="buf-week"></span>
+    </div>
+
+    <!-- Agenda content -->
+    <column id="agenda-body">
+      <span class="ag-empty">connecting to emacs agent-server...</span>
+    </column>
+
+    <!-- Mode line -->
+    <div id="mode-line">
+      <span class="ml-rw">-U:**-</span>&nbsp;
+      <span class="ml-buf">*Org Agenda*</span>&nbsp;&nbsp;
+      <span class="ml-mode">(Org-Agenda)</span>&nbsp;
+      <span class="ml-fill">─</span>
+      <span class="ml-pos" id="ml-info">geworfen</span>
+    </div>
+  </column>
+
+  <!-- ═══ Bottom Panels ═══ -->
+  <div id="panels">
+
+    <!-- Existence Data -->
+    <column class="panel" box-="square" pad-="1 0">
+      <span class="panel-title">existence data</span>
+      <div is-="separator" style="--separator-color: rgba(139,233,253,0.1)"></div>
+      <column pad-="0 0">
+        <div class="stat-row"><span class="stat-label">notes</span><span class="stat-value">3,156</span></div>
+        <div class="stat-row"><span class="stat-label">bibliography</span><span class="stat-value">7,000+</span></div>
+        <div class="stat-row"><span class="stat-label">commits</span><span class="stat-value">14,000+</span></div>
+        <div class="stat-row"><span class="stat-label">journal</span><span class="stat-value">696d</span></div>
+        <div class="stat-row"><span class="stat-label">health</span><span class="stat-value">4,214</span></div>
+        <div class="stat-row"><span class="stat-label">garden</span><span class="stat-value">1,400+</span></div>
       </column>
     </column>
 
-    <!-- Right: Sidebar -->
-    <column id="side-col">
-      <!-- Stats -->
-      <column id="stats" box-="square" pad-="1 0">
-        <row pad-="0 1">
-          <span is-="badge" variant-="background1" style="--badge-text: var(--peach)">existence data</span>
-        </row>
-        <div is-="separator" style="--separator-color: var(--surface1)"></div>
-        <column pad-="1 0">
-          <div class="stat-row"><span class="stat-label">notes</span><span class="stat-value">3,156</span></div>
-          <div class="stat-row"><span class="stat-label">bibliography</span><span class="stat-value">7,000+</span></div>
-          <div class="stat-row"><span class="stat-label">git commits</span><span class="stat-value">14,000+</span></div>
-          <div class="stat-row"><span class="stat-label">journal days</span><span class="stat-value">696</span></div>
-          <div class="stat-row"><span class="stat-label">health records</span><span class="stat-value">4,214</span></div>
-          <div class="stat-row"><span class="stat-label">digital garden</span><span class="stat-value">1,400+</span></div>
-        </column>
+    <!-- Public Key -->
+    <column class="panel" box-="square" pad-="1 0">
+      <span class="panel-title">public key</span>
+      <div is-="separator" style="--separator-color: rgba(139,233,253,0.1)"></div>
+      <column pad-="1 1">
+        <a href="https://notes.junghanacs.com">› digital garden</a>
+        <a href="https://github.com/junghanacs">› github</a>
+        <a href="https://www.threads.net/@junghanacs">› threads</a>
+        <a href="https://github.com/junghan0611/geworfen">› source</a>
       </column>
+    </column>
 
-      <!-- Links -->
-      <column id="links" box-="square" shear-="top" pad-="1 0">
-        <row pad-="0 1">
-          <span is-="badge" variant-="background1" style="--badge-text: var(--blue)">public key</span>
-        </row>
-        <div is-="separator" style="--separator-color: var(--surface1)"></div>
-        <column pad-="1 1">
-          <a href="https://notes.junghanacs.com">📚 digital garden</a>
-          <a href="https://github.com/junghanacs">🐙 github</a>
-          <a href="https://www.threads.net/@junghanacs">🧵 threads</a>
-          <a href="https://github.com/junghan0611/geworfen">⚡ source</a>
-        </column>
-      </column>
-
-      <!-- Keybinds -->
-      <column box-="square" shear-="top" pad-="1 0" style="--box-border-color: var(--surface1)">
-        <row pad-="0 1">
-          <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)">keys</span>
-        </row>
-        <div is-="separator" style="--separator-color: var(--surface1)"></div>
-        <column pad-="1 1" style="color: var(--overlay1)">
-          <span><span style="color: var(--mauve)">h</span>/<span style="color: var(--mauve)">l</span>  prev/next day</span>
-          <span><span style="color: var(--mauve)">H</span>/<span style="color: var(--mauve)">L</span>  prev/next week</span>
-          <span><span style="color: var(--mauve)">t</span>    today</span>
-        </column>
+    <!-- Keys -->
+    <column class="panel" box-="square" pad-="1 0">
+      <span class="panel-title">navigation</span>
+      <div is-="separator" style="--separator-color: rgba(139,233,253,0.1)"></div>
+      <column pad-="1 1">
+        <span class="key-row"><kbd>h</kbd> / <kbd>l</kbd>  day</span>
+        <span class="key-row"><kbd>H</kbd> / <kbd>L</kbd>  week</span>
+        <span class="key-row"><kbd>t</kbd>      today</span>
       </column>
     </column>
   </div>
 
-  <!-- ═══ Statusline ═══ -->
+  <!-- Statusline -->
   <row id="statusline">
-    <span is-="badge" variant-="green" style="--badge-text: var(--crust)">NORMAL</span>
-    <span is-="badge" variant-="background1" style="--badge-text: var(--blue)">emacs</span>
+    <span is-="badge" variant-="green" style="--badge-text: var(--gw-deep)">NORMAL</span>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--gw-cyan)">emacs 30.2</span>
     <row self-="grow">
-      <span is-="badge" variant-="background0" style="--badge-text: var(--subtext0)">data from org-agenda via agent-server</span>
+      <span is-="badge" variant-="background0" style="--badge-text: var(--overlay2)">org-agenda via agent-server</span>
     </row>
-    <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)" id="status-cache">cache: --</span>
-    <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)" id="status-time"></span>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)" id="status-ms"></span>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)" id="status-clock"></span>
   </row>
+
+</column>
 
 <script>
 let currentDate = new Date();
-const KST = 9 * 60; // UTC+9
+const KST = 9 * 60;
 
 function fmt(d) {
-  // Format as KST date
   const kst = new Date(d.getTime() + (KST + d.getTimezoneOffset()) * 60000);
   return kst.toISOString().slice(0, 10);
 }
 
-function go(offset) {
-  currentDate.setDate(currentDate.getDate() + offset);
-  fetchAgenda();
+function go(n) { currentDate.setDate(currentDate.getDate() + n); fetchAgenda(); }
+function goToday() { currentDate = new Date(); fetchAgenda(); }
+
+// ── Render entries to look like real org-agenda ──
+
+function catClass(src) {
+  if (!src) return 'ag-cat';
+  if (src.includes('O')) return 'ag-cat ag-cat-oracle';
+  if (src.includes('T')) return 'ag-cat ag-cat-thinkpad';
+  if (src.match(/Human|Diary/i)) return 'ag-cat ag-cat-human';
+  return 'ag-cat';
 }
 
-function goToday() {
-  currentDate = new Date();
-  fetchAgenda();
-}
-
-function renderEntries(data) {
-  const el = document.getElementById('entries');
+function renderAgenda(data) {
+  const body = document.getElementById('agenda-body');
   const dateEl = document.getElementById('date-display');
-  const weekEl = document.getElementById('week-badge');
   const countEl = document.getElementById('entry-count');
+  const weekEl = document.getElementById('buf-week');
+  const mlInfo = document.getElementById('ml-info');
 
   const dow = data['day-of-week'] || '';
   const month = data.month || '';
   const day = data.day || '';
   const year = data.year || '';
+
   dateEl.textContent = `${dow} ${day} ${month} ${year}`;
   weekEl.textContent = data.week ? `W${data.week}` : '';
 
-  const entryCount = data.entries ? data.entries.filter(e => e.type === 'entry').length : 0;
-  countEl.textContent = entryCount > 0 ? `${entryCount} entries` : '';
+  const entries = data.entries || [];
+  const realEntries = entries.filter(e => e.type === 'entry');
+  countEl.textContent = realEntries.length > 0 ? `${realEntries.length} entries` : '';
+  mlInfo.textContent = `${dow} ${day} ${month} ${year}`;
 
-  if (!data.entries || data.entries.length === 0) {
-    el.innerHTML = '<span style="color: var(--overlay2); padding: 1lh 1ch;">no entries — a quiet day</span>';
+  if (entries.length === 0) {
+    body.innerHTML = '<div class="ag-empty">no entries — a quiet day in the world</div>';
     return;
   }
 
+  // Render header lines (like Emacs shows them)
   let html = '';
-  for (const e of data.entries) {
+  html += `<div class="ag-header">Day-agenda (W${data.week || '?'}):</div>`;
+  html += `<div class="ag-date">${dow}    ${day} ${month} ${year}</div>`;
+
+  for (const e of entries) {
     if (e.type === 'separator') {
-      html += `<div class="separator">${e.time} ${'─'.repeat(40)}</div>`;
+      html += `<div class="ag-sep">${pad(14)}${e.time}${'·'.repeat(6)} ${'─'.repeat(16)}</div>`;
     } else if (e.type === 'now') {
-      html += `<div class="now-line">▸ ${e.time} ── now ${'─'.repeat(30)}</div>`;
+      html += `<div class="ag-now">${pad(14)}${e.time}${'·'.repeat(6)} now ${'─'.repeat(28)}</div>`;
     } else if (e.type === 'entry') {
-      const tags = e.tags && e.tags.length
-        ? `<span class="tags">:${e.tags.join(':')}:</span>`
-        : '';
-      html += `<div class="entry"><span class="time">${e.time}</span><span class="source">${esc(e.source || '')}</span><span class="text">${esc(e.text || '')}</span>${tags}</div>`;
+      const tags = e.tags && e.tags.length ? ` <span class="ag-tags">:${e.tags.join(':')}:</span>` : '';
+      html += `<div class="ag-line">` +
+        `<span class="${catClass(e.source)}">${esc(padR(e.source ? e.source + ':' : '', 12))}</span>` +
+        `<span class="ag-time">${esc(padR(e.time, 5))}</span>` +
+        `<span class="ag-dots">······</span> ` +
+        `<span class="ag-text">${esc(e.text || '')}</span>` +
+        tags +
+        `</div>`;
     } else if (e.type === 'raw') {
-      html += `<div class="entry"><span class="text" style="color: var(--subtext0)">${esc(e.text || '')}</span></div>`;
+      html += `<div class="ag-line"><span class="ag-text" style="color:var(--subtext0)">${esc(e.text)}</span></div>`;
     }
   }
-  el.innerHTML = html;
+
+  body.innerHTML = html;
 }
 
-function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function pad(n) { return ' '.repeat(n); }
+function padR(s, n) { return s.length >= n ? s : s + ' '.repeat(n - s.length); }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 async function fetchAgenda() {
-  const el = document.getElementById('entries');
-  el.innerHTML = '<span id="loading">fetching from emacs...</span>';
+  const body = document.getElementById('agenda-body');
+  body.innerHTML = '<div class="ag-empty" style="color:var(--gw-cyan)">fetching from emacs...</div>';
 
   const t0 = performance.now();
   try {
@@ -335,23 +469,22 @@ async function fetchAgenda() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const ms = Math.round(performance.now() - t0);
-    document.getElementById('status-cache').textContent = `${ms}ms`;
-    renderEntries(data);
+    document.getElementById('status-ms').textContent = `${ms}ms`;
+    renderAgenda(data);
   } catch (e) {
-    el.innerHTML = `<span style="color: var(--red); padding: 1ch;">error: ${esc(e.message)}</span>`;
+    body.innerHTML = `<div class="ag-empty" style="color:var(--gw-red)">error: ${esc(e.message)}</div>`;
   }
 }
 
 // Clock
-function updateClock() {
+function tick() {
   const now = new Date();
   const kst = new Date(now.getTime() + (KST + now.getTimezoneOffset()) * 60000);
-  const h = String(kst.getHours()).padStart(2, '0');
-  const m = String(kst.getMinutes()).padStart(2, '0');
-  document.getElementById('status-time').textContent = `KST ${h}:${m}`;
+  const h = String(kst.getHours()).padStart(2,'0');
+  const m = String(kst.getMinutes()).padStart(2,'0');
+  document.getElementById('status-clock').textContent = `${h}:${m} KST`;
 }
-setInterval(updateClock, 10000);
-updateClock();
+setInterval(tick, 10000); tick();
 
 // Keyboard
 document.addEventListener('keydown', (e) => {
@@ -363,11 +496,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 't') goToday();
 });
 
-// Auto-refresh today every 60s
-setInterval(() => {
-  const today = fmt(new Date());
-  if (fmt(currentDate) === today) fetchAgenda();
-}, 60000);
+// Auto-refresh today
+setInterval(() => { if (fmt(currentDate) === fmt(new Date())) fetchAgenda(); }, 60000);
 
 fetchAgenda();
 </script>
