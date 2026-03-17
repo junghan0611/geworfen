@@ -6,8 +6,8 @@
   <title>geworfen — thrown into the world</title>
 
   <!-- WebTUI + Catppuccin (as-is, no overrides) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui@latest/dist/webtui.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui-theme-catppuccin@latest/dist/theme-catppuccin.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/css@latest/dist/full.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/theme-catppuccin@latest/dist/index.css">
   <link rel="stylesheet" href="/css/geworfen.css">
 
   <!-- Fonts -->
@@ -16,8 +16,23 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 
   <style>
+    @font-face {
+      font-family: 'GLG Mono';
+      src: url('/fonts/GLG-Mono-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GLG Mono';
+      src: url('/fonts/GLG-Mono-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
-      --font-family: 'JetBrains Mono', monospace;
+      --font-family: 'GLG Mono', 'JetBrains Mono', monospace;
       --font-size: 14px;
       --line-height: 1.45;
     }
