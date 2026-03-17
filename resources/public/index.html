@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>geworfen — thrown into the world</title>
 
-  <!-- WebTUI -->
+  <!-- WebTUI + Catppuccin base -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui@latest/dist/webtui.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui-theme-catppuccin@latest/dist/theme-catppuccin.min.css">
+  <!-- TRON override — must come AFTER catppuccin -->
+  <link rel="stylesheet" href="/css/geworfen.css">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,31 +17,10 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 
   <style>
-    /* ═══════════════════════════════════════════════════
-       TRON / FUI Override — SF Terminal, not retro
-       ═══════════════════════════════════════════════════ */
     :root {
       --font-family: 'JetBrains Mono', monospace;
       --font-size: 14px;
       --line-height: 1.45;
-
-      /* TRON palette */
-      --gw-cyan:   #8be9fd;
-      --gw-green:  #50fa7b;
-      --gw-purple: #c792ea;
-      --gw-orange: #fab387;
-      --gw-red:    #f38ba8;
-      --gw-dim:    #44475a;
-      --gw-deep:   #0a0a1a;
-
-      /* Glow */
-      --gw-glow-green: 0 0 8px rgba(80, 250, 123, 0.3);
-      --gw-glow-cyan:  0 0 8px rgba(139, 233, 253, 0.3);
-      --gw-glow-border: 0 0 12px rgba(139, 233, 253, 0.15);
-    }
-
-    body, html {
-      background: var(--gw-deep) !important;
     }
 
     body {
@@ -57,7 +38,7 @@
 
     /* ═══ Title ═══ */
     #title-row h1 {
-      color: var(--gw-cyan);
+      color: var(--blue);
       text-shadow: var(--gw-glow-cyan);
       font-size: 1.2em;
     }
@@ -84,7 +65,7 @@
       border-bottom: 1px solid rgba(139, 233, 253, 0.15);
     }
     #buffer-header .buf-name {
-      color: var(--gw-green);
+      color: var(--green);
       font-weight: 700;
     }
     #buffer-header .buf-info {
@@ -110,9 +91,9 @@
       white-space: nowrap;
       border-top: 1px solid rgba(139, 233, 253, 0.15);
     }
-    #mode-line .ml-rw { color: var(--gw-cyan); }
-    #mode-line .ml-buf { color: var(--gw-green); font-weight: 700; }
-    #mode-line .ml-mode { color: var(--gw-purple); }
+    #mode-line .ml-rw { color: var(--blue); }
+    #mode-line .ml-buf { color: var(--green); font-weight: 700; }
+    #mode-line .ml-mode { color: var(--mauve); }
     #mode-line .ml-fill { flex-grow: 1; overflow: hidden; }
     #mode-line .ml-pos { color: var(--overlay2); }
 
@@ -133,7 +114,7 @@
       padding: 0 1ch;
     }
     .ag-date {
-      color: var(--gw-cyan);
+      color: var(--blue);
       font-weight: 700;
       text-shadow: var(--gw-glow-cyan);
       padding: 0 1ch;
@@ -145,18 +126,18 @@
       display: inline-block;
       min-width: 12ch;
     }
-    .ag-cat-oracle { color: var(--gw-purple); }
+    .ag-cat-oracle { color: var(--mauve); }
     .ag-cat-thinkpad { color: var(--blue); }
-    .ag-cat-human { color: var(--gw-green); }
+    .ag-cat-human { color: var(--green); }
 
     /* Time + dots */
     .ag-time {
-      color: var(--gw-orange);
+      color: var(--peach);
       display: inline-block;
       min-width: 6ch;
     }
     .ag-dots {
-      color: var(--gw-dim);
+      color: var(--overlay0);
     }
 
     /* Entry text */
@@ -176,7 +157,7 @@
 
     /* Now line */
     .ag-now {
-      color: var(--gw-green);
+      color: var(--green);
       font-weight: 700;
       text-shadow: var(--gw-glow-green);
       padding: 0 1ch;
@@ -200,11 +181,11 @@
       border-color: rgba(139, 233, 253, 0.2);
     }
     #nav button:hover {
-      border-color: var(--gw-cyan);
+      border-color: var(--blue);
       box-shadow: var(--gw-glow-cyan);
     }
     #date-display {
-      color: var(--gw-cyan);
+      color: var(--blue);
       text-shadow: var(--gw-glow-cyan);
     }
     #entry-count { color: var(--overlay1); }
@@ -222,7 +203,7 @@
       background: rgba(15, 15, 35, 0.6);
     }
     .panel-title {
-      color: var(--gw-cyan);
+      color: var(--blue);
       text-shadow: var(--gw-glow-cyan);
       font-size: 0.85em;
       padding: 0 1ch;
@@ -230,11 +211,11 @@
       letter-spacing: 0.1ch;
     }
     .panel a {
-      color: var(--gw-cyan);
+      color: var(--blue);
       text-decoration: none;
     }
     .panel a:hover {
-      color: var(--gw-green);
+      color: var(--green);
       text-shadow: var(--gw-glow-green);
     }
 
@@ -244,10 +225,10 @@
       padding: 0 1ch;
     }
     .stat-label { color: var(--subtext0); }
-    .stat-value { color: var(--gw-orange); }
+    .stat-value { color: var(--peach); }
 
     .key-row { padding: 0 1ch; color: var(--overlay1); }
-    .key-row kbd { color: var(--gw-cyan); }
+    .key-row kbd { color: var(--blue); }
 
     /* ═══ Statusline (Vim-style) ═══ */
     #statusline { margin-top: 0.5lh; }
@@ -286,7 +267,7 @@
   <!-- Title -->
   <row id="title-row" gap-="1" align-="center" pad-="0 0">
     <h1>geworfen</h1>
-    <span is-="badge" variant-="green" style="--badge-text: var(--gw-deep)">v0.1</span>
+    <span is-="badge" variant-="green" style="--badge-text: var(--crust)">v0.1</span>
     <span class="sub">thrown into the world</span>
   </row>
 
@@ -370,8 +351,8 @@
 
   <!-- Statusline -->
   <row id="statusline">
-    <span is-="badge" variant-="green" style="--badge-text: var(--gw-deep)">NORMAL</span>
-    <span is-="badge" variant-="background1" style="--badge-text: var(--gw-cyan)">emacs 30.2</span>
+    <span is-="badge" variant-="green" style="--badge-text: var(--crust)">NORMAL</span>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--blue)">emacs 30.2</span>
     <row self-="grow">
       <span is-="badge" variant-="background0" style="--badge-text: var(--overlay2)">org-agenda via agent-server</span>
     </row>
@@ -461,7 +442,7 @@ function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 
 async function fetchAgenda() {
   const body = document.getElementById('agenda-body');
-  body.innerHTML = '<div class="ag-empty" style="color:var(--gw-cyan)">fetching from emacs...</div>';
+  body.innerHTML = '<div class="ag-empty" style="color:var(--blue)">fetching from emacs...</div>';
 
   const t0 = performance.now();
   try {
@@ -472,7 +453,7 @@ async function fetchAgenda() {
     document.getElementById('status-ms').textContent = `${ms}ms`;
     renderAgenda(data);
   } catch (e) {
-    body.innerHTML = `<div class="ag-empty" style="color:var(--gw-red)">error: ${esc(e.message)}</div>`;
+    body.innerHTML = `<div class="ag-empty" style="color:var(--red)">error: ${esc(e.message)}</div>`;
   }
 }
 

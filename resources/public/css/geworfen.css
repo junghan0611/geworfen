@@ -1,73 +1,55 @@
 /*
- * geworfen — SF terminal aesthetics
- * Not retro. TRON. Blade Runner. A future terminal.
+ * geworfen — TRON FUI theme over Catppuccin
+ * Override Catppuccin variables with SF terminal palette.
+ * WebTUI components use these variables, so everything stays consistent.
  */
 
+@layer base {
+  [data-webtui-theme='catppuccin'] {
+    /* ── Background: deeper than Catppuccin Mocha ── */
+    --base:     #0c0c1e;
+    --mantle:   #08081a;
+    --crust:    #050514;
+    --surface0: #141428;
+    --surface1: #1c1c38;
+    --surface2: #282850;
+
+    /* ── Foreground: slightly brighter for contrast ── */
+    --text:     #d4d4e8;
+    --subtext1: #b8b8d0;
+    --subtext0: #9898b8;
+    --overlay2: #7878a0;
+    --overlay1: #606088;
+    --overlay0: #484870;
+
+    /* ── Accents: TRON neon ── */
+    --green:    #50fa7b;
+    --teal:     #50fa7b;
+    --blue:     #8be9fd;
+    --sapphire: #8be9fd;
+    --sky:      #8be9fd;
+    --lavender: #b4befe;
+    --mauve:    #c792ea;
+    --peach:    #fab387;
+    --red:      #f38ba8;
+
+    /* ── Map to WebTUI system ── */
+    --background0: var(--base);
+    --background1: var(--surface0);
+    --background2: var(--surface1);
+    --background3: var(--surface2);
+    --foreground0: var(--text);
+    --foreground1: var(--subtext1);
+    --foreground2: var(--overlay2);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Glow effects — the TRON signature
+   ═══════════════════════════════════════════ */
+
 :root {
-  /* SF glow color system */
-  --gw-bg:           #0a0a1a;
-  --gw-bg-surface:   #0f0f2a;
-  --gw-text:         #e0e0e0;
-  --gw-text-dim:     #6a6a8a;
-  --gw-accent:       #50fa7b;    /* neon green */
-  --gw-accent-blue:  #8be9fd;    /* cyan */
-  --gw-accent-purple:#c792ea;    /* purple */
-  --gw-border:       rgba(139, 233, 253, 0.2);
-  --gw-glow:         0 0 10px rgba(80, 250, 123, 0.3);
-
-  /* Fonts */
-  --gw-font-mono:    'Geist Mono', 'Pretendard', monospace;
-  --gw-font-pixel:   'Geist Mono', monospace; /* swap for Geist Pixel when available */
-}
-
-html[data-theme="dark"] {
-  background-color: var(--gw-bg);
-  color: var(--gw-text);
-}
-
-body {
-  font-family: var(--gw-font-mono);
-  max-width: 80ch;
-  margin: 2lh auto;
-  padding: 0 2ch;
-}
-
-h1, h2, h3 {
-  color: var(--gw-accent);
-  text-shadow: var(--gw-glow);
-}
-
-.tui-box {
-  border-color: var(--gw-border);
-  background-color: var(--gw-bg-surface);
-}
-
-pre {
-  color: var(--gw-text-dim);
-}
-
-/* Glow edge */
-.glow {
-  box-shadow: var(--gw-glow);
-  border-color: var(--gw-accent);
-}
-
-/* Agent stamp entry */
-.stamp-entry {
-  border-left: 2px solid var(--gw-accent-blue);
-  padding-left: 1ch;
-  margin: 0.5lh 0;
-}
-
-.stamp-entry .time {
-  color: var(--gw-accent-purple);
-}
-
-.stamp-entry .text {
-  color: var(--gw-text);
-}
-
-.stamp-entry .tags {
-  color: var(--gw-text-dim);
-  font-size: 0.85em;
+  --gw-glow-green: 0 0 8px rgba(80, 250, 123, 0.3);
+  --gw-glow-cyan:  0 0 8px rgba(139, 233, 253, 0.3);
+  --gw-glow-border: 0 0 15px rgba(139, 233, 253, 0.12);
 }
