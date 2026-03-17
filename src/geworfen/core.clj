@@ -6,6 +6,6 @@
 (defn -main
   "Start the server"
   [& _args]
-  (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
+  (let [port (Integer/parseInt (or (System/getenv "PORT") "3333"))]
     (server/start! {:port port})
     (println (str "geworfen listening on http://localhost:" port))))

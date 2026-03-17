@@ -1,39 +1,55 @@
 (ns geworfen.server
-  "HTTP server — http-kit + reitit"
+  "HTTP server — http-kit + reitit.
+   100 visitors hitting /api/agenda?date=2026-03-15 = 1 emacsclient call (cached)."
   (:require [org.httpkit.server :as http]
             [reitit.ring :as ring]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [geworfen.views :as views]))
+            [ring.util.response :as resp]
+            [ring.middleware.params :refer [wrap-params]]
+            [geworfen.agenda :as agenda]
+            [jsonista.core :as json]))
 
 (defonce ^:private server (atom nil))
+
+(defn- agenda-handler
+  "GET /api/agenda?date=2026-03-17  (or today if omitted)"
+  [request]
+  (let [date (or (get-in request [:query-params "date"])
+                 (str (java.time.LocalDate/now)))
+        data (agenda/get-day date)]
+    {:status 200
+     :headers {"Content-Type" "application/json; charset=utf-8"
+               "Access-Control-Allow-Origin" "*"}
+     :body (json/write-value-as-string data)}))
+
+(defn- trigger-handler
+  "POST /api/trigger — agent stamps, invalidate today's cache"
+  [_request]
+  (agenda/invalidate-today!)
+  {:status 200
+   :headers {"Content-Type" "application/json"}
+   :body "{\"triggered\": true}"})
+
+(defn- index-handler [_request]
+  (-> (resp/resource-response "public/index.html")
+      (resp/content-type "text/html; charset=utf-8")))
 
 (def app
   (ring/ring-handler
    (ring/router
-    [["/" {:get {:handler views/index}}]
+    [["/"          {:get {:handler index-handler}}]
      ["/api"
-      ["/agenda" {:get {:handler views/agenda-api}}]
-      ["/events" {:get {:handler views/sse-events}}]
-      ["/trigger" {:post {:handler views/trigger-refresh}}]]])
+      ["/agenda"  {:get {:handler agenda-handler}}]
+      ["/trigger" {:post {:handler trigger-handler}}]]])
    (ring/routes
     (ring/create-resource-handler {:path "/"})
     (ring/create-default-handler))
-   {:middleware [[wrap-defaults
-                  (assoc-in site-defaults [:security :anti-forgery] false)]]}))
+   {:middleware [[ring.middleware.params/wrap-params]]}))
 
 (defn start!
-  "Start the server on the given port"
   [{:keys [port] :or {port 8080}}]
-  (when @server
-    (@server)
-    (reset! server nil))
+  (when @server (@server) (reset! server nil))
   (reset! server (http/run-server app {:port port}))
-  (println (str "Server listening on port " port)))
+  (println (str "geworfen listening on http://localhost:" port)))
 
-(defn stop!
-  "Stop the server"
-  []
-  (when @server
-    (@server)
-    (reset! server nil)
-    (println "Server stopped")))
+(defn stop! []
+  (when @server (@server) (reset! server nil) (println "stopped")))

@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en" data-webtui-theme="catppuccin">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>geworfen — thrown into the world</title>
+
+  <!-- WebTUI CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui@latest/dist/webtui.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aspect-ui/webtui-theme-catppuccin@latest/dist/theme-catppuccin.min.css">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-family: 'JetBrains Mono', monospace;
+      --font-size: 15px;
+      --line-height: 1.4;
+      --gw-glow: 0 0 8px rgba(166, 227, 161, 0.25);
+    }
+
+    body {
+      max-width: 96ch;
+      margin: 1lh auto;
+      padding: 0 2ch;
+    }
+
+    /* ── Header ── */
+    #header {
+      --box-border-color: var(--green);
+    }
+    #header h1 {
+      color: var(--green);
+      text-shadow: var(--gw-glow);
+      display: inline;
+    }
+    #header .subtitle {
+      color: var(--subtext0);
+    }
+
+    /* ── Navigation ── */
+    #nav { margin: 1lh 0; }
+    #nav button { cursor: pointer; min-width: 4ch; }
+    #date-display {
+      color: var(--green);
+      font-weight: 700;
+      text-shadow: var(--gw-glow);
+    }
+    #week-badge { color: var(--overlay2); }
+    #entry-count { color: var(--overlay1); }
+
+    /* ── Agenda entries ── */
+    #agenda {
+      --box-border-color: var(--surface1);
+      min-height: 10lh;
+    }
+
+    .entry {
+      padding: 0 1ch;
+      display: flex;
+      gap: 1ch;
+    }
+    .entry:hover {
+      background: var(--surface0);
+    }
+
+    .time {
+      color: var(--mauve);
+      min-width: 6ch;
+      flex-shrink: 0;
+    }
+    .source {
+      color: var(--blue);
+      min-width: 11ch;
+      flex-shrink: 0;
+    }
+    .text {
+      color: var(--text);
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tags {
+      color: var(--overlay1);
+      font-size: 0.85em;
+      flex-shrink: 0;
+      max-width: 24ch;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .separator {
+      color: var(--surface2);
+      padding: 0 1ch;
+    }
+    .now-line {
+      color: var(--green);
+      font-weight: 700;
+      text-shadow: var(--gw-glow);
+      padding: 0 1ch;
+    }
+
+    #loading { color: var(--overlay2); padding: 1lh 1ch; }
+
+    /* ── Sidebar stats ── */
+    #stats {
+      --box-border-color: var(--surface1);
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 1ch;
+    }
+    .stat-label { color: var(--subtext0); }
+    .stat-value { color: var(--peach); font-weight: 700; }
+
+    /* ── Links ── */
+    #links {
+      --box-border-color: var(--surface1);
+    }
+    #links a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    #links a:hover {
+      color: var(--lavender);
+    }
+
+    /* ── Statusline ── */
+    #statusline {
+      margin-top: 1lh;
+    }
+
+    /* ── Layout ── */
+    #main-grid {
+      display: grid;
+      grid-template-columns: 1fr 24ch;
+      gap: 0 1ch;
+    }
+
+    #agenda-col { grid-column: 1; }
+    #side-col {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 72ch) {
+      #main-grid {
+        grid-template-columns: 1fr;
+      }
+      #side-col {
+        grid-column: 1;
+        margin-top: 1lh;
+      }
+      .tags { display: none; }
+      .source { min-width: 5ch; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ Header ═══ -->
+  <column id="header" box-="double" pad-="1 2">
+    <row gap-="1" align-="center">
+      <h1>geworfen</h1>
+      <span is-="badge" variant-="green" style="--badge-text: var(--crust)">v0.1</span>
+    </row>
+    <span class="subtitle">thrown into the world — one human's raw existence data</span>
+  </column>
+
+  <!-- ═══ Date Nav ═══ -->
+  <row id="nav" gap-="1" align-="center">
+    <button onclick="go(-7)" variant-="background1">«w</button>
+    <button onclick="go(-1)" variant-="background1">‹</button>
+    <button onclick="goToday()" variant-="green" style="--badge-text: var(--crust)">today</button>
+    <button onclick="go(+1)" variant-="background1">›</button>
+    <button onclick="go(+7)" variant-="background1">w»</button>
+    <span id="date-display"></span>
+    <span id="week-badge"></span>
+    <span id="entry-count"></span>
+  </row>
+
+  <!-- ═══ Main Grid ═══ -->
+  <div id="main-grid">
+
+    <!-- Left: Agenda -->
+    <column id="agenda-col">
+      <column id="agenda" box-="square" pad-="1 0">
+        <row pad-="0 1">
+          <span is-="badge" variant-="background1" style="--badge-text: var(--green)">org-agenda</span>
+        </row>
+        <div is-="separator" style="--separator-color: var(--surface1)"></div>
+        <column id="entries">
+          <span id="loading">connecting to emacs agent-server...</span>
+        </column>
+      </column>
+    </column>
+
+    <!-- Right: Sidebar -->
+    <column id="side-col">
+      <!-- Stats -->
+      <column id="stats" box-="square" pad-="1 0">
+        <row pad-="0 1">
+          <span is-="badge" variant-="background1" style="--badge-text: var(--peach)">existence data</span>
+        </row>
+        <div is-="separator" style="--separator-color: var(--surface1)"></div>
+        <column pad-="1 0">
+          <div class="stat-row"><span class="stat-label">notes</span><span class="stat-value">3,156</span></div>
+          <div class="stat-row"><span class="stat-label">bibliography</span><span class="stat-value">7,000+</span></div>
+          <div class="stat-row"><span class="stat-label">git commits</span><span class="stat-value">14,000+</span></div>
+          <div class="stat-row"><span class="stat-label">journal days</span><span class="stat-value">696</span></div>
+          <div class="stat-row"><span class="stat-label">health records</span><span class="stat-value">4,214</span></div>
+          <div class="stat-row"><span class="stat-label">digital garden</span><span class="stat-value">1,400+</span></div>
+        </column>
+      </column>
+
+      <!-- Links -->
+      <column id="links" box-="square" shear-="top" pad-="1 0">
+        <row pad-="0 1">
+          <span is-="badge" variant-="background1" style="--badge-text: var(--blue)">public key</span>
+        </row>
+        <div is-="separator" style="--separator-color: var(--surface1)"></div>
+        <column pad-="1 1">
+          <a href="https://notes.junghanacs.com">📚 digital garden</a>
+          <a href="https://github.com/junghanacs">🐙 github</a>
+          <a href="https://www.threads.net/@junghanacs">🧵 threads</a>
+          <a href="https://github.com/junghan0611/geworfen">⚡ source</a>
+        </column>
+      </column>
+
+      <!-- Keybinds -->
+      <column box-="square" shear-="top" pad-="1 0" style="--box-border-color: var(--surface1)">
+        <row pad-="0 1">
+          <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)">keys</span>
+        </row>
+        <div is-="separator" style="--separator-color: var(--surface1)"></div>
+        <column pad-="1 1" style="color: var(--overlay1)">
+          <span><span style="color: var(--mauve)">h</span>/<span style="color: var(--mauve)">l</span>  prev/next day</span>
+          <span><span style="color: var(--mauve)">H</span>/<span style="color: var(--mauve)">L</span>  prev/next week</span>
+          <span><span style="color: var(--mauve)">t</span>    today</span>
+        </column>
+      </column>
+    </column>
+  </div>
+
+  <!-- ═══ Statusline ═══ -->
+  <row id="statusline">
+    <span is-="badge" variant-="green" style="--badge-text: var(--crust)">NORMAL</span>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--blue)">emacs</span>
+    <row self-="grow">
+      <span is-="badge" variant-="background0" style="--badge-text: var(--subtext0)">data from org-agenda via agent-server</span>
+    </row>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)" id="status-cache">cache: --</span>
+    <span is-="badge" variant-="background1" style="--badge-text: var(--overlay2)" id="status-time"></span>
+  </row>
+
+<script>
+let currentDate = new Date();
+const KST = 9 * 60; // UTC+9
+
+function fmt(d) {
+  // Format as KST date
+  const kst = new Date(d.getTime() + (KST + d.getTimezoneOffset()) * 60000);
+  return kst.toISOString().slice(0, 10);
+}
+
+function go(offset) {
+  currentDate.setDate(currentDate.getDate() + offset);
+  fetchAgenda();
+}
+
+function goToday() {
+  currentDate = new Date();
+  fetchAgenda();
+}
+
+function renderEntries(data) {
+  const el = document.getElementById('entries');
+  const dateEl = document.getElementById('date-display');
+  const weekEl = document.getElementById('week-badge');
+  const countEl = document.getElementById('entry-count');
+
+  const dow = data['day-of-week'] || '';
+  const month = data.month || '';
+  const day = data.day || '';
+  const year = data.year || '';
+  dateEl.textContent = `${dow} ${day} ${month} ${year}`;
+  weekEl.textContent = data.week ? `W${data.week}` : '';
+
+  const entryCount = data.entries ? data.entries.filter(e => e.type === 'entry').length : 0;
+  countEl.textContent = entryCount > 0 ? `${entryCount} entries` : '';
+
+  if (!data.entries || data.entries.length === 0) {
+    el.innerHTML = '<span style="color: var(--overlay2); padding: 1lh 1ch;">no entries — a quiet day</span>';
+    return;
+  }
+
+  let html = '';
+  for (const e of data.entries) {
+    if (e.type === 'separator') {
+      html += `<div class="separator">${e.time} ${'─'.repeat(40)}</div>`;
+    } else if (e.type === 'now') {
+      html += `<div class="now-line">▸ ${e.time} ── now ${'─'.repeat(30)}</div>`;
+    } else if (e.type === 'entry') {
+      const tags = e.tags && e.tags.length
+        ? `<span class="tags">:${e.tags.join(':')}:</span>`
+        : '';
+      html += `<div class="entry"><span class="time">${e.time}</span><span class="source">${esc(e.source || '')}</span><span class="text">${esc(e.text || '')}</span>${tags}</div>`;
+    } else if (e.type === 'raw') {
+      html += `<div class="entry"><span class="text" style="color: var(--subtext0)">${esc(e.text || '')}</span></div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function fetchAgenda() {
+  const el = document.getElementById('entries');
+  el.innerHTML = '<span id="loading">fetching from emacs...</span>';
+
+  const t0 = performance.now();
+  try {
+    const res = await fetch(`/api/agenda?date=${fmt(currentDate)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const ms = Math.round(performance.now() - t0);
+    document.getElementById('status-cache').textContent = `${ms}ms`;
+    renderEntries(data);
+  } catch (e) {
+    el.innerHTML = `<span style="color: var(--red); padding: 1ch;">error: ${esc(e.message)}</span>`;
+  }
+}
+
+// Clock
+function updateClock() {
+  const now = new Date();
+  const kst = new Date(now.getTime() + (KST + now.getTimezoneOffset()) * 60000);
+  const h = String(kst.getHours()).padStart(2, '0');
+  const m = String(kst.getMinutes()).padStart(2, '0');
+  document.getElementById('status-time').textContent = `KST ${h}:${m}`;
+}
+setInterval(updateClock, 10000);
+updateClock();
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'h' || e.key === 'ArrowLeft') go(-1);
+  if (e.key === 'l' || e.key === 'ArrowRight') go(+1);
+  if (e.key === 'H') go(-7);
+  if (e.key === 'L') go(+7);
+  if (e.key === 't') goToday();
+});
+
+// Auto-refresh today every 60s
+setInterval(() => {
+  const today = fmt(new Date());
+  if (fmt(currentDate) === today) fetchAgenda();
+}, 60000);
+
+fetchAgenda();
+</script>
+
+</body>
+</html>
