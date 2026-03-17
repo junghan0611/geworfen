@@ -1,5 +1,5 @@
 {
-  description = "geworfen — existence data WebTUI viewer";
+  description = "geworfen — existence data WebTUI viewer (GraalVM native)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -9,29 +9,56 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            pkgs.clojure
-            pkgs.jdk17
-            pkgs.babashka
-          ];
+        pkgs = import nixpkgs { inherit system; };
+        graalvm = pkgs.graalvmPackages.graalvm-ce;
 
-          shellHook = ''
-            echo "geworfen — thrown into the world"
-            echo "================================"
-            echo "Clojure: $(clojure --version 2>&1)"
-            echo "Java:    $(java -version 2>&1 | head -1)"
-            echo "bb:      $(bb --version 2>&1)"
-            echo ""
-            echo "  bb dev             # dev server"
-            echo "  bb repl            # nREPL (CIDER)"
-            echo "  clj -M:run         # production server"
-            echo ""
+        fhsEnv = pkgs.buildFHSEnv {
+          name = "geworfen-build";
+          targetPkgs = pkgs: with pkgs; [
+            clojure
+            graalvm
+            zlib
+            glibc
+            glibc.static
+          ];
+          runScript = pkgs.writeShellScript "geworfen-build-init" ''
+            export JAVA_HOME=${graalvm}
+            export GRAALVM_HOME=${graalvm}
+            exec bash "$@"
           '';
         };
-      }
-    );
+      in
+      {
+        packages.fhs = fhsEnv;
+
+        devShells = {
+          # Default: GraalVM (native-image build)
+          default = pkgs.mkShell {
+            name = "geworfen";
+            buildInputs = with pkgs; [ clojure graalvm babashka ];
+            JAVA_HOME = graalvm;
+            GRAALVM_HOME = graalvm;
+            shellHook = ''
+              echo "geworfen — thrown into the world"
+              echo "================================"
+              echo "GraalVM: $(native-image --version 2>/dev/null | head -1)"
+              echo ""
+              echo "  clj -M:run              # JVM server"
+              echo "  clj -T:build uber       # uberjar"
+              echo "  ./run.sh build          # native binary"
+              echo "  ./run.sh serve          # run native binary"
+              echo ""
+            '';
+          };
+
+          # JVM only (lightweight dev)
+          jvm = pkgs.mkShell {
+            name = "geworfen-jvm";
+            buildInputs = with pkgs; [ clojure jdk17_headless babashka ];
+            shellHook = ''
+              echo "geworfen dev (JVM only)"
+            '';
+          };
+        };
+      });
 }

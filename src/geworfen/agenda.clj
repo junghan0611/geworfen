@@ -11,19 +11,19 @@
 ;; Cache — per-date, TTL-based
 ;; ---------------------------------------------------------------------------
 
-(def ^:private cache (ConcurrentHashMap.))
+(def ^ConcurrentHashMap cache (ConcurrentHashMap.))
 (def ^:private cache-ttl-ms
   {:today    (* 30 1000)       ;; today: 30 seconds (stamps arrive frequently)
    :past     (* 60 60 1000)})  ;; past dates: 1 hour (data doesn't change)
 
-(defn- cache-key [date-str] (str "agenda:" date-str))
+(defn- cache-key ^String [date-str] (str "agenda:" date-str))
 
 (defn- cache-get [date-str]
   (when-let [entry (.get cache (cache-key date-str))]
     (let [{:keys [data timestamp]} entry
           today? (= date-str (str (LocalDate/now)))
           ttl (if today? (:today cache-ttl-ms) (:past cache-ttl-ms))]
-      (when (< (- (System/currentTimeMillis) timestamp) ttl)
+      (when (< (- (System/currentTimeMillis) ^long timestamp) ttl)
         data))))
 
 (defn- cache-put! [date-str data]

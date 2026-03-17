@@ -1,0 +1,9 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "public/.*"},
+      {"pattern": "public/css/.*"},
+      {"pattern": "public/fonts/.*"}
+    ]
+  }
+}

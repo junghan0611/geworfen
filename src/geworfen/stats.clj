@@ -6,10 +6,10 @@
 (def ^:private ttl-ms (* 60 60 1000)) ;; 1 hour
 
 (defn- count-files [dir ext]
-  (let [d (io/file dir)]
+  (let [^java.io.File d (io/file dir)]
     (if (.isDirectory d)
       (->> (file-seq d)
-           (filter #(and (.isFile %) (.endsWith (.getName %) ext)))
+           (filter (fn [^java.io.File f] (and (.isFile f) (.endsWith (.getName f) (str ext)))))
            count)
       0)))
 
