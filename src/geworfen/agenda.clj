@@ -107,14 +107,28 @@
 ;; Public API
 ;; ---------------------------------------------------------------------------
 
-(defn get-day
-  "Get parsed agenda for a date. Uses cache. Returns structured data."
+(defn- within-range?
+  "Only serve dates within 14 days of today."
   [date-str]
-  (or (cache-get date-str)
-      (let [raw (emacs/agenda-day date-str)
-            parsed (parse-agenda raw)]
-        (cache-put! date-str parsed)
-        parsed)))
+  (try
+    (let [date (LocalDate/parse date-str)
+          today (LocalDate/now)
+          min-date (.minusDays today 14)
+          max-date (.plusDays today 1)]
+      (and (not (.isBefore date min-date))
+           (not (.isAfter date max-date))))
+    (catch Exception _ false)))
+
+(defn get-day
+  "Get parsed agenda for a date. Uses cache. Limited to ±14 days."
+  [date-str]
+  (if (within-range? date-str)
+    (or (cache-get date-str)
+        (let [raw (emacs/agenda-day date-str)
+              parsed (parse-agenda raw)]
+          (cache-put! date-str parsed)
+          parsed))
+    {:error "out of range" :message "Only the last 14 days are available."}))
 
 (defn get-today
   "Get today's agenda."

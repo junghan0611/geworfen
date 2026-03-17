@@ -160,11 +160,9 @@
 
   <!-- Date Nav -->
   <row id="nav" gap-="1" align-="center">
-    <button onclick="go(-7)" variant-="background1">«</button>
-    <button onclick="go(-1)" variant-="background1">‹</button>
+    <button onclick="go(-1)" variant-="background1">‹ prev</button>
     <button onclick="goToday()">today</button>
-    <button onclick="go(+1)" variant-="background1">›</button>
-    <button onclick="go(+7)" variant-="background1">»</button>
+    <button onclick="go(+1)" variant-="background1">next ›</button>
     <span id="date-display"></span>
     <span id="entry-count"></span>
   </row>
@@ -219,9 +217,9 @@
       <span class="panel-title">navigation</span>
       <div is-="separator"></div>
       <column pad-="1 1">
-        <span class="key-row"><kbd>h</kbd>/<kbd>l</kbd>  day</span>
-        <span class="key-row"><kbd>H</kbd>/<kbd>L</kbd>  week</span>
-        <span class="key-row"><kbd>t</kbd>      today</span>
+        <span class="key-row"><kbd>[</kbd>/<kbd>]</kbd>  prev/next day</span>
+        <span class="key-row"><kbd>←</kbd>/<kbd>→</kbd>  prev/next day</span>
+        <span class="key-row"><kbd>t</kbd>     today</span>
       </column>
     </column>
   </div>
@@ -248,7 +246,21 @@ function fmt(d) {
   return kst.toISOString().slice(0, 10);
 }
 
-function go(n) { currentDate.setDate(currentDate.getDate() + n); fetchAgenda(); }
+function clampDate(d) {
+  const now = new Date();
+  const min = new Date(now); min.setDate(min.getDate() - 14);
+  const max = new Date(now); max.setDate(max.getDate() + 1);
+  if (d < min) return min;
+  if (d > max) return max;
+  return d;
+}
+
+function go(n) {
+  const next = new Date(currentDate);
+  next.setDate(next.getDate() + n);
+  currentDate = clampDate(next);
+  fetchAgenda();
+}
 function goToday() { currentDate = new Date(); fetchAgenda(); }
 
 function catClass(src) {
@@ -319,6 +331,11 @@ async function fetchAgenda() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     document.getElementById('status-ms').textContent = `${Math.round(performance.now()-t0)}ms`;
+    if (data.error) {
+      document.getElementById('agenda-body').innerHTML =
+        `<div class="ag-empty">${esc(data.message || data.error)}</div>`;
+      return;
+    }
     renderAgenda(data);
   } catch (e) {
     document.getElementById('agenda-body').innerHTML =
@@ -336,10 +353,8 @@ setInterval(tick, 10000); tick();
 
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
-  if (e.key === 'h' || e.key === 'ArrowLeft') go(-1);
-  if (e.key === 'l' || e.key === 'ArrowRight') go(+1);
-  if (e.key === 'H') go(-7);
-  if (e.key === 'L') go(+7);
+  if (e.key === '[' || e.key === 'ArrowLeft') go(-1);
+  if (e.key === ']' || e.key === 'ArrowRight') go(+1);
   if (e.key === 't') goToday();
 });
 
