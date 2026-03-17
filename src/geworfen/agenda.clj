@@ -125,7 +125,7 @@
   (if (within-range? date-str)
     (or (cache-get date-str)
         (let [raw (emacs/agenda-day date-str)
-              parsed (parse-agenda raw)]
+              parsed (assoc (parse-agenda raw) :raw raw)]
           (cache-put! date-str parsed)
           parsed))
     {:error "out of range" :message "Only the last 14 days are available."}))

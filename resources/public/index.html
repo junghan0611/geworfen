@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>geworfen — thrown into the world</title>
 
-  <!-- WebTUI + Catppuccin (as-is, no overrides) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/css@latest/dist/full.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/theme-catppuccin@latest/dist/index.css">
-  <link rel="stylesheet" href="/css/geworfen.css">
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
@@ -19,16 +16,12 @@
     @font-face {
       font-family: 'GLG Mono';
       src: url('/fonts/GLG-Mono-Regular.woff2') format('woff2');
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
+      font-weight: 400; font-style: normal; font-display: swap;
     }
     @font-face {
       font-family: 'GLG Mono';
       src: url('/fonts/GLG-Mono-Bold.woff2') format('woff2');
-      font-weight: 700;
-      font-style: normal;
-      font-display: swap;
+      font-weight: 700; font-style: normal; font-display: swap;
     }
 
     :root {
@@ -39,19 +32,9 @@
 
     body {
       max-width: 100ch;
-      margin: 2lh auto;
+      margin: 1lh auto;
       padding: 0 2ch;
     }
-
-    /* ── Header ── */
-    #title-row h1 { color: var(--green); display: inline; }
-    #title-row .sub { color: var(--subtext0); font-size: 0.85em; }
-
-    /* ── Navigation ── */
-    #nav { margin: 1lh 0; }
-    #nav button { cursor: pointer; min-width: 4ch; }
-    #date-display { color: var(--green); font-weight: 700; }
-    #entry-count { color: var(--overlay1); }
 
     /* ── Emacs Buffer ── */
     #buffer-header {
@@ -65,7 +48,23 @@
     #buffer-header .buf-name { color: var(--green); font-weight: 700; }
     #buffer-header .buf-info { color: var(--overlay1); }
 
-    #agenda-body { padding: 0.5lh 0; min-height: 14lh; }
+    #agenda {
+      white-space: pre;
+      overflow-x: auto;
+      padding: 0.5lh 1ch;
+      min-height: 16lh;
+    }
+
+    .line:hover { background: var(--surface0); }
+    .ag-date { color: var(--blue); font-weight: 700; }
+    .ag-header { color: var(--overlay2); }
+    .ag-now { color: var(--green); font-weight: 700; }
+    .ag-sep { color: var(--surface2); }
+    .ag-cat-agent { color: var(--blue); }
+    .ag-cat-human { color: var(--green); }
+    .ag-cat-diary { color: var(--yellow); }
+    .ag-tags { color: var(--overlay1); }
+    .ag-text { color: var(--text); }
 
     #mode-line {
       background: var(--surface1);
@@ -80,34 +79,8 @@
     #mode-line .ml-rw { color: var(--blue); }
     #mode-line .ml-buf { color: var(--green); font-weight: 700; }
     #mode-line .ml-mode { color: var(--mauve); }
-    #mode-line .ml-fill { flex-grow: 1; overflow: hidden; }
+    #mode-line .ml-fill { flex-grow: 1; }
     #mode-line .ml-pos { color: var(--overlay2); }
-
-    /* ── Org-agenda lines ── */
-    .ag-line {
-      padding: 0 1ch;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .ag-line:hover { background: var(--surface0); }
-
-    .ag-header { color: var(--overlay2); padding: 0 1ch; }
-    .ag-date { color: var(--blue); font-weight: 700; padding: 0 1ch; }
-
-    .ag-cat { color: var(--blue); display: inline-block; min-width: 12ch; }
-    .ag-cat-oracle { color: var(--mauve); }
-    .ag-cat-thinkpad { color: var(--blue); }
-    .ag-cat-human { color: var(--green); }
-
-    .ag-time { color: var(--peach); display: inline-block; min-width: 6ch; }
-    .ag-dots { color: var(--overlay0); }
-    .ag-text { color: var(--text); }
-    .ag-tags { color: var(--overlay1); font-size: 0.9em; }
-
-    .ag-sep { color: var(--surface2); padding: 0 1ch; }
-    .ag-now { color: var(--green); font-weight: 700; padding: 0 1ch; background: var(--surface0); }
-    .ag-empty { color: var(--overlay1); padding: 2lh 1ch; text-align: center; }
 
     /* ── Bottom panels ── */
     #panels {
@@ -133,70 +106,35 @@
     .key-row { padding: 0 1ch; color: var(--overlay1); }
     .key-row kbd { color: var(--blue); }
 
-    /* ── Statusline ── */
-    #statusline { margin-top: 1lh; }
-
     /* ── Mobile ── */
-    /* Tablet */
     @media (max-width: 72ch) {
       #panels { grid-template-columns: 1fr 1fr; }
-      .ag-tags { display: none; }
-      .ag-cat { min-width: 8ch; }
     }
-
-    /* Mobile */
     @media (max-width: 48ch) {
-      body { padding: 0 1ch; margin: 1lh auto; }
-      :root { --font-size: 13px; }
+      body { padding: 0 1ch; margin: 0; }
+      :root { --font-size: 12px; }
       #panels { grid-template-columns: 1fr; }
-      .ag-cat { min-width: 5ch; font-size: 0.9em; }
-      .ag-dots { display: none; }
-      .ag-time { min-width: 5ch; }
-      #nav button { min-width: 3ch; font-size: 0.9em; }
-      #title-row .sub { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══ Frame ═══ -->
-<column id="frame" box-="double" pad-="1 2">
-
-  <!-- Title -->
-  <row id="title-row" gap-="1" align-="center">
-    <h1>geworfen</h1>
-    <span is-="badge" variant-="green">v0.1</span>
-    <span class="sub">thrown into the world</span>
-  </row>
-
-  <div is-="separator"></div>
-
-  <!-- Date Nav -->
-  <row id="nav" gap-="1" align-="center">
-    <button onclick="go(-1)" variant-="background1">‹ prev</button>
-    <button onclick="goToday()">today</button>
-    <button onclick="go(+1)" variant-="background1">next ›</button>
-    <span id="date-display"></span>
-    <span id="entry-count"></span>
-  </row>
-
   <!-- ═══ Emacs Buffer ═══ -->
   <column id="emacs-window" box-="square">
     <div id="buffer-header">
-      <span class="buf-name">*Org Agenda(Day)*</span>
-      <span class="buf-info" id="buf-week"></span>
+      <span class="buf-name">*Org Agenda*</span>
+      <span class="buf-info" id="buf-info"></span>
     </div>
 
-    <column id="agenda-body">
-      <span class="ag-empty">connecting to emacs agent-server...</span>
-    </column>
+    <pre id="agenda">connecting to emacs agent-server...</pre>
 
     <div id="mode-line">
       <span class="ml-rw">-U:**-</span>&nbsp;
       <span class="ml-buf">*Org Agenda*</span>&nbsp;&nbsp;
       <span class="ml-mode">(Org-Agenda)</span>&nbsp;
-      <span class="ml-fill">─</span>
-      <span class="ml-pos" id="ml-info">geworfen</span>
+      <span class="ml-fill"></span>
+      <span class="ml-pos" id="ml-date">geworfen</span>&nbsp;
+      <span class="ml-pos" id="ml-time"></span>
     </div>
   </column>
 
@@ -236,19 +174,6 @@
     </column>
   </div>
 
-  <!-- Statusline -->
-  <row id="statusline">
-    <span is-="badge" variant-="green">NORMAL</span>
-    <span is-="badge" variant-="background1">emacs 30.2</span>
-    <row self-="grow">
-      <span is-="badge" variant-="background0">org-agenda via agent-server</span>
-    </row>
-    <span is-="badge" variant-="background1" id="status-ms"></span>
-    <span is-="badge" variant-="background1" id="status-clock"></span>
-  </row>
-
-</column>
-
 <script>
 let currentDate = new Date();
 const KST = 9 * 60;
@@ -275,99 +200,108 @@ function go(n) {
 }
 function goToday() { currentDate = new Date(); fetchAgenda(); }
 
-function catClass(src) {
-  if (!src) return 'ag-cat';
-  if (src.includes('O')) return 'ag-cat ag-cat-oracle';
-  if (src.includes('T')) return 'ag-cat ag-cat-thinkpad';
-  if (/Human|Diary/i.test(src)) return 'ag-cat ag-cat-human';
-  return 'ag-cat';
-}
+function colorize(raw) {
+  return raw.split('\n').map(line => {
+    const el = document.createElement('span');
+    el.className = 'line';
 
-function renderAgenda(data) {
-  const body = document.getElementById('agenda-body');
-  const dateEl = document.getElementById('date-display');
-  const countEl = document.getElementById('entry-count');
-  const weekEl = document.getElementById('buf-week');
-  const mlInfo = document.getElementById('ml-info');
-
-  const dow = data['day-of-week'] || '';
-  const month = data.month || '';
-  const day = data.day || '';
-  const year = data.year || '';
-
-  dateEl.textContent = `${dow} ${day} ${month} ${year}`;
-  weekEl.textContent = data.week ? `W${data.week}` : '';
-
-  const entries = data.entries || [];
-  const real = entries.filter(e => e.type === 'entry');
-  countEl.textContent = real.length > 0 ? `${real.length} entries` : '';
-  mlInfo.textContent = `${dow} ${day} ${month} ${year}`;
-
-  if (entries.length === 0) {
-    body.innerHTML = '<div class="ag-empty">no entries — a quiet day</div>';
-    return;
-  }
-
-  let html = '';
-  html += `<div class="ag-header">Day-agenda (W${data.week || '?'}):</div>`;
-  html += `<div class="ag-date">${dow}    ${day} ${month} ${year}</div>`;
-
-  for (const e of entries) {
-    if (e.type === 'separator') {
-      html += `<div class="ag-sep">${' '.repeat(14)}${e.time}${'·'.repeat(6)} ${'─'.repeat(16)}</div>`;
-    } else if (e.type === 'now') {
-      html += `<div class="ag-now">▸ ${e.time}${'·'.repeat(6)} now ${'─'.repeat(28)}</div>`;
-    } else if (e.type === 'entry') {
-      const tags = e.tags?.length ? ` <span class="ag-tags">:${e.tags.join(':')}:</span>` : '';
-      const cat = e.source ? e.source + ':' : '';
-      html += `<div class="ag-line">` +
-        `<span class="${catClass(e.source)}">${esc(cat.padEnd(12))}</span>` +
-        `<span class="ag-time">${esc((e.time||'').padEnd(5))}</span>` +
-        `<span class="ag-dots">······</span> ` +
-        `<span class="ag-text">${esc(e.text || '')}</span>` +
-        tags + `</div>`;
-    } else if (e.type === 'raw') {
-      html += `<div class="ag-line"><span style="color:var(--subtext0)">${esc(e.text)}</span></div>`;
+    if (/^\w+\s+\d+\s+\w+\s+\d{4}/.test(line)) {
+      el.className += ' ag-date';
+      el.textContent = line;
     }
-  }
-  body.innerHTML = html;
-}
+    else if (/^Day-agenda/.test(line)) {
+      el.className += ' ag-header';
+      el.textContent = line;
+    }
+    else if (/now\s*[-─]/.test(line)) {
+      el.className += ' ag-now';
+      el.textContent = line;
+    }
+    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary/.test(line)) {
+      el.className += ' ag-sep';
+      el.textContent = line;
+    }
+    else if (/^\s*(Agent|Human|Diary)/.test(line)) {
+      const m = line.match(/^(\s*)(Agent\([A-Z]\)|Human|Diary):?\s*/);
+      if (m) {
+        const indent = m[1];
+        const cat = m[2];
+        const rest = line.slice(m[0].length);
 
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        const catSpan = document.createElement('span');
+        if (cat.startsWith('Agent')) catSpan.className = 'ag-cat-agent';
+        else if (cat === 'Human') catSpan.className = 'ag-cat-human';
+        else catSpan.className = 'ag-cat-diary';
+        catSpan.textContent = cat + ':';
+
+        const tagMatch = rest.match(/^(.*?)\s+(:[a-zA-Z0-9:]+:)\s*$/);
+        const textPart = tagMatch ? tagMatch[1] : rest;
+        const tagsPart = tagMatch ? tagMatch[2] : '';
+
+        el.textContent = indent;
+        el.appendChild(catSpan);
+        const textSpan = document.createElement('span');
+        textSpan.className = 'ag-text';
+        textSpan.textContent = ' ' + textPart;
+        el.appendChild(textSpan);
+        if (tagsPart) {
+          const tagsSpan = document.createElement('span');
+          tagsSpan.className = 'ag-tags';
+          tagsSpan.textContent = '  ' + tagsPart;
+          el.appendChild(tagsSpan);
+        }
+      } else {
+        el.textContent = line;
+      }
+    }
+    else {
+      el.textContent = line;
+    }
+    return el;
+  });
+}
 
 async function fetchAgenda() {
-  document.getElementById('agenda-body').innerHTML = '<div class="ag-empty">fetching from emacs...</div>';
-  const t0 = performance.now();
+  const el = document.getElementById('agenda');
+  el.textContent = 'fetching from emacs...';
+
   try {
     const res = await fetch(`/api/agenda?date=${fmt(currentDate)}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    document.getElementById('status-ms').textContent = `${Math.round(performance.now()-t0)}ms`;
-    if (data.error) {
-      document.getElementById('agenda-body').innerHTML =
-        `<div class="ag-empty">${esc(data.message || data.error)}</div>`;
-      return;
-    }
-    renderAgenda(data);
+
+    if (data.error) { el.textContent = data.message || data.error; return; }
+
+    el.innerHTML = '';
+    colorize(data.raw || '').forEach(span => {
+      el.appendChild(span);
+      el.appendChild(document.createTextNode('\n'));
+    });
+
+    const entries = (data.entries || []).filter(e => e.type === 'entry').length;
+    document.getElementById('buf-info').textContent =
+      `${entries} entries`;
+    document.getElementById('ml-date').textContent =
+      `${data['day-of-week']||''} ${data.day||''} ${data.month||''} ${data.year||''}`;
   } catch (e) {
-    document.getElementById('agenda-body').innerHTML =
-      `<div class="ag-empty" style="color:var(--red)">error: ${esc(e.message)}</div>`;
+    el.textContent = 'error: ' + e.message;
   }
 }
 
 function tick() {
   const now = new Date();
   const kst = new Date(now.getTime() + (KST + now.getTimezoneOffset()) * 60000);
-  document.getElementById('status-clock').textContent =
+  document.getElementById('ml-time').textContent =
     `${String(kst.getHours()).padStart(2,'0')}:${String(kst.getMinutes()).padStart(2,'0')} KST`;
 }
 setInterval(tick, 10000); tick();
 
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
-  if (e.key === '[' || e.key === 'ArrowLeft') go(-1);
-  if (e.key === ']' || e.key === 'ArrowRight') go(+1);
-  if (e.key === '.') goToday();
+  // key or keyCode (handles Korean IME state)
+  if (e.key === '[' || e.code === 'BracketLeft' || e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  if (e.key === ']' || e.code === 'BracketRight' || e.key === 'ArrowRight') { e.preventDefault(); go(+1); }
+  if (e.key === '.' || e.code === 'Period') { e.preventDefault(); goToday(); }
 });
 
 setInterval(() => { if (fmt(currentDate) === fmt(new Date())) fetchAgenda(); }, 60000);
