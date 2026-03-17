@@ -159,10 +159,21 @@
       <div is-="separator"></div>
       <column pad-="1 1">
         <a href="https://notes.junghanacs.com">› digital garden</a>
-        <a href="https://github.com/junghanacs">› github</a>
+        <a href="https://github.com/junghanacs">› @junghanacs</a>
+        <a href="https://github.com/junghan0611">› @junghan0611</a>
         <a href="https://www.threads.net/@junghanacs">› threads</a>
+        <a href="https://bsky.app/profile/junghanacs.bsky.social">› bluesky</a>
+        <a href="https://fosstodon.org/@junghanacs">› mastodon</a>
+        <a href="https://notes.junghanacs.com/index.xml">› rss</a>
         <a href="https://github.com/junghan0611/geworfen">› source</a>
-
+        <details is-="popover" position-="end start">
+          <summary style="color:var(--overlay1);cursor:pointer">› ssh public key</summary>
+          <column box-="square" pad-="1 1" style="background:var(--surface0);max-width:60ch;word-break:break-all;font-size:0.8em;color:var(--subtext0)">
+            <span style="color:var(--green);font-size:1.1em">ssh-rsa (RSA 4096)</span>
+            <div is-="separator"></div>
+            <span id="ssh-key" style="white-space:pre-wrap">loading...</span>
+          </column>
+        </details>
       </column>
     </column>
 
@@ -327,6 +338,17 @@ async function fetchStats() {
   } catch(e) {}
 }
 fetchStats();
+
+// SSH key (lazy load on popover open)
+document.querySelector('details[is-="popover"]')?.addEventListener('toggle', async (e) => {
+  const el = document.getElementById('ssh-key');
+  if (e.target.open && el.textContent === 'loading...') {
+    try {
+      const res = await fetch('/ssh.pub');
+      el.textContent = await res.text();
+    } catch(e) { el.textContent = 'failed to load'; }
+  }
+});
 </script>
 
 </body>
