@@ -1,55 +1,9 @@
 /*
- * geworfen — TRON FUI theme over Catppuccin
- * Override Catppuccin variables with SF terminal palette.
- * WebTUI components use these variables, so everything stays consistent.
+ * geworfen — minimal custom styles
+ * Catppuccin theme used as-is. No overrides.
+ * Only glow effects added on top.
  */
 
-@layer base {
-  [data-webtui-theme='catppuccin'] {
-    /* ── Background: deeper than Catppuccin Mocha ── */
-    --base:     #0c0c1e;
-    --mantle:   #08081a;
-    --crust:    #050514;
-    --surface0: #141428;
-    --surface1: #1c1c38;
-    --surface2: #282850;
-
-    /* ── Foreground: slightly brighter for contrast ── */
-    --text:     #d4d4e8;
-    --subtext1: #b8b8d0;
-    --subtext0: #9898b8;
-    --overlay2: #7878a0;
-    --overlay1: #606088;
-    --overlay0: #484870;
-
-    /* ── Accents: TRON neon ── */
-    --green:    #50fa7b;
-    --teal:     #50fa7b;
-    --blue:     #8be9fd;
-    --sapphire: #8be9fd;
-    --sky:      #8be9fd;
-    --lavender: #b4befe;
-    --mauve:    #c792ea;
-    --peach:    #fab387;
-    --red:      #f38ba8;
-
-    /* ── Map to WebTUI system ── */
-    --background0: var(--base);
-    --background1: var(--surface0);
-    --background2: var(--surface1);
-    --background3: var(--surface2);
-    --foreground0: var(--text);
-    --foreground1: var(--subtext1);
-    --foreground2: var(--overlay2);
-  }
-}
-
-/* ═══════════════════════════════════════════
-   Glow effects — the TRON signature
-   ═══════════════════════════════════════════ */
-
-:root {
-  --gw-glow-green: 0 0 8px rgba(80, 250, 123, 0.3);
-  --gw-glow-cyan:  0 0 8px rgba(139, 233, 253, 0.3);
-  --gw-glow-border: 0 0 15px rgba(139, 233, 253, 0.12);
-}
+.glow-green { text-shadow: 0 0 8px rgba(166, 227, 161, 0.4); }
+.glow-cyan  { text-shadow: 0 0 8px rgba(137, 220, 235, 0.4); }
+.glow-box   { box-shadow: 0 0 12px rgba(137, 220, 235, 0.12); }
