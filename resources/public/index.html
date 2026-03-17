@@ -137,10 +137,23 @@
     #statusline { margin-top: 1lh; }
 
     /* ── Mobile ── */
+    /* Tablet */
     @media (max-width: 72ch) {
-      #panels { grid-template-columns: 1fr; }
+      #panels { grid-template-columns: 1fr 1fr; }
       .ag-tags { display: none; }
-      .ag-cat { min-width: 5ch; }
+      .ag-cat { min-width: 8ch; }
+    }
+
+    /* Mobile */
+    @media (max-width: 48ch) {
+      body { padding: 0 1ch; margin: 1lh auto; }
+      :root { --font-size: 13px; }
+      #panels { grid-template-columns: 1fr; }
+      .ag-cat { min-width: 5ch; font-size: 0.9em; }
+      .ag-dots { display: none; }
+      .ag-time { min-width: 5ch; }
+      #nav button { min-width: 3ch; font-size: 0.9em; }
+      #title-row .sub { display: none; }
     }
   </style>
 </head>
@@ -218,8 +231,7 @@
       <div is-="separator"></div>
       <column pad-="1 1">
         <span class="key-row"><kbd>[</kbd>/<kbd>]</kbd>  prev/next day</span>
-        <span class="key-row"><kbd>←</kbd>/<kbd>→</kbd>  prev/next day</span>
-        <span class="key-row"><kbd>t</kbd>     today</span>
+        <span class="key-row"><kbd>.</kbd>     today</span>
       </column>
     </column>
   </div>
@@ -355,7 +367,7 @@ document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
   if (e.key === '[' || e.key === 'ArrowLeft') go(-1);
   if (e.key === ']' || e.key === 'ArrowRight') go(+1);
-  if (e.key === 't') goToday();
+  if (e.key === '.') goToday();
 });
 
 setInterval(() => { if (fmt(currentDate) === fmt(new Date())) fetchAgenda(); }, 60000);
