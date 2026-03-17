@@ -2,58 +2,77 @@
 
 > **thrown into the world** — a WebTUI viewer that renders one human's raw existence data, unprocessed and transparent.
 
-*The thrower of the project is thrown in his own throw.*  
+*The thrower of the project is thrown in his own throw.*
 *— Heidegger*
+
+![geworfen v0.1 — org-agenda live on agenda.junghanacs.com](docs/screenshot-v0.1.png)
+
+*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — 43MB native binary, Emacs org-agenda served via Docker + agent-server, WebTUI Catppuccin theme, GLG-Mono font.*
 
 ## What Is This
 
-A real-time web dashboard for `www.junghanacs.com` — not a static blog, but a transparent data nexus of one human's daily life, co-lived with AI agents.
+A real-time web dashboard — not a static blog, but a transparent data nexus of one human's daily life, co-lived with AI agents.
 
-The front door is an org-agenda timeline. Behind it: existence data and agents, alive on the time axis.
-
-## What It Shows
-
-| Data | Scale | Format |
-|------|-------|--------|
-| Denote notes | 3,000+ | .org |
-| Sleep / heart rate / time-tracking | 4,214+ | SQLite |
-| Bibliography | 7,000+ | .bib |
-| Daily journal | 696+ days | .org |
-| Git commits | 14,000+ | git |
-| Digital garden | 1,400+ | .md |
+The front door is an org-agenda timeline. Behind it: existence data and agents, alive on the time axis. The same `agent-org-agenda-day` function that Emacs users see, that bots see — this page calls it too.
 
 ## Architecture
 
 ```
-[Frontend]                    [Backend]                   [Data]
-WebTUI CSS (CDN)              Clojure server              Emacs daemon
-+ SF terminal aesthetics      (Ring / http-kit)            emacsclient
-+ ASCII box org-agenda        GET  /api/agenda             ~/org/
-+ SSE real-time updates       GET  /api/events (SSE)       lifetract.db
-                              POST /api/trigger            .bib
+[Browser]                     [Docker Container]           [Host]
+WebTUI + Catppuccin           geworfen binary              Emacs daemon
+GLG-Mono font                 (GraalVM native, 43MB)       agent-server.el
+fetch /api/agenda?date=  →    Clojure server          →    emacsclient
+                              http-kit + reitit             ~/org/ (agenda files)
+                              per-date cache (30s/1h)
 ```
 
-Visitors hit a web page → `fetch /api/agenda` → Clojure calls `emacsclient` once → cached.  
-Agent stamps → `curl /api/trigger` → SSE broadcast → all visitors update.
+- 100 visitors hitting the same date = **1 emacsclient call** (cached)
+- 10 visitors on 10 different dates = 10 × 50ms = 500ms serialized
+- Native binary: **instant startup**, ~30MB RAM, no JVM needed
 
-## Design — SF Terminal Aesthetics
+## Existence Data
 
-**Not retro.** TRON. Blade Runner. A future terminal.
+| Data | Scale | Format |
+|------|-------|--------|
+| Denote notes | 3,000+ | .org |
+| Bibliography | 8,200+ | .bib |
+| Git commits | 8,500+ | git |
+| Daily journal | 718+ days | .org |
+| Health records | 4,400+ | SQLite |
+| Digital garden | 2,100+ | .md |
 
-- Colors: neon green `#50fa7b`, cyan `#8be9fd`, deep dark `#0a0a1a`
-- Fonts: Geist Pixel (headings) + Geist Mono + Pretendard (body)
-- Layout: `ch`/`lh` character-based grid — org-agenda native
-
-> *"A sufficiently advanced information ecosystem takes the form of the cleanest text terminal."*
-
-## Development
+## Build & Run
 
 ```bash
-nix develop          # enter dev environment
-clj -M:dev           # start nREPL (CIDER)
-clj -M:run           # start production server
-bb dev               # dev server via Babashka
+# Development (JVM)
+nix develop -c bash
+clj -M:run                    # server on port 3333
+
+# Production (native binary)
+nix develop -c bash
+./run.sh build                # GraalVM native-image (~31s)
+./run.sh serve                # run binary (instant startup)
+
+# Docker (recommended for deployment)
+# geworfen binary inside container,
+# connects to host Emacs via emacsclient socket mount
 ```
+
+## API
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | WebTUI org-agenda viewer |
+| `/api/agenda?date=2026-03-17` | GET | Parsed agenda + raw text (JSON) |
+| `/api/stats` | GET | Existence data counts (JSON) |
+| `/api/trigger` | POST | Invalidate today's cache |
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `←` / `→` | Previous / next day |
+| `.` | Jump to today |
 
 ## Name
 
@@ -61,19 +80,26 @@ bb dev               # dev server via Babashka
 
 From Heidegger's *Geworfenheit* (thrownness): the fact that human existence is always already thrown into a world it did not choose. Every timestamp stamped by an agent into org-agenda is a facticity (*Faktizität*) — thrown into the world, raw and unprocessed. That's this project.
 
-| Term | Meaning |
-|------|---------|
-| Geworfenheit | thrownness — the condition of being thrown |
-| geworfen | thrown — past participle |
-| werfen | to throw — infinitive |
-| Dasein | being-there — human existence |
-| Faktizität | facticity — the already-so |
+## Ecosystem
+
+geworfen is part of a larger system — one human's reproducible knowledge and computing environment:
+
+| Project | Description |
+|---------|-------------|
+| [geworfen](https://github.com/junghan0611/geworfen) | This project — existence data WebTUI viewer |
+| [doomemacs-config](https://github.com/junghan0611/doomemacs-config) | Doom Emacs configuration — org-agenda, denote, agent-server.el |
+| [nixos-config](https://github.com/junghan0611/nixos-config) | NixOS system configuration — reproducible across 4 machines |
+| [agent-config](https://github.com/junghan0611/agent-config) | AI agent orchestration — 24 skills, semantic memory, multi-device |
+| [GLG-Mono](https://github.com/junghan0611/GLG-Mono) | Korean programming font — the font this viewer uses |
+| [notes](https://github.com/junghanacs/notes.junghanacs.com) | Digital garden — [notes.junghanacs.com](https://notes.junghanacs.com) |
 
 ## Links
 
 - 📚 [Digital Garden](https://notes.junghanacs.com)
-- 🐙 [GitHub](https://github.com/junghanacs)
+- 🐙 [GitHub @junghanacs](https://github.com/junghanacs)
 - 🧵 [Threads](https://www.threads.net/@junghanacs)
+- 🦋 [Bluesky](https://bsky.app/profile/junghanacs.bsky.social)
+- 🐘 [Mastodon](https://fosstodon.org/@junghanacs)
 
 ## License
 
