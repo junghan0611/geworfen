@@ -47,15 +47,27 @@
   (when-let [[_ dow day month year] (re-find #"(\w+)\s+(\d+)\s+(\w+)\s+(\d{4})" line)]
     {:day-of-week dow :day (parse-long day) :month month :year (parse-long year)}))
 
+(defn- parse-tags [text]
+  "Extract tags from end of text: 'some text :tag1:tag2:' → [body tags-vec]"
+  (let [[_ body tags-str] (re-find #"^(.*?)\s*(:[a-zA-Z0-9:]+:)\s*$" text)]
+    (if tags-str
+      [(or body text) (filterv (complement str/blank?) (str/split tags-str #":"))]
+      [text []])))
+
 (defn- parse-entry [line]
-  (let [;; Agent entry: "  Agent(T):   12:19...... text :tags:"
-        agent-match (re-find #"^\s+(Agent\([A-Z]\)):\s+(\d{1,2}:\d{2})\.\.\.\.\.\.\s+(.+)" line)
+  (let [;; Category entry: "  Agent(T):  12:19...... text :tags:"
+        ;;                  "  Human:     5:53...... text"
+        ;;                  "  Schedule:  5:00-5:30  text"
+        cat-ts-match (re-find #"^\s+([\w()]+):\s+(\d{1,2}:\d{2})\.\.\.\.\.\.\s+(.+)" line)
+        cat-sched-match (re-find #"^\s+([\w()]+):\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})\s+(.+)" line)
         ;; Time separator: "              10:00...... ----------------"
         sep-match (re-find #"^\s+(\d{1,2}:\d{2})\.\.\.\.\.\.\s+-{4,}" line)
         ;; Now line: "              14:01...... now - - -"
         now-match (re-find #"^\s+(\d{1,2}:\d{2})\.\.\.\.\.\.\s+now\s+-" line)
-        ;; Human/Diary entry pattern
-        other-match (re-find #"^\s+(\w[\w()]*):?\s+(\d{1,2}:\d{2})\.\.\.\.\.\.\s+(.+)" line)]
+        ;; Bare timestamp (no category): "    5:53...... text"
+        bare-match (re-find #"^\s+(\d{1,2}:\d{2})\.\.\.\.\.\.\s+(.+)" line)
+        ;; Bare scheduled: "    5:00-5:30  text"
+        bare-sched (re-find #"^\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})\s+(.+)" line)]
     (cond
       now-match
       {:type "now" :time (second now-match)}
@@ -63,30 +75,31 @@
       sep-match
       {:type "separator" :time (second sep-match)}
 
-      agent-match
-      (let [[_ source time text] agent-match
-            ;; extract tags from end: ":tag1:tag2:"
-            [_ body tags-str] (re-find #"^(.*?)\s*(:[a-zA-Z0-9:]+:)\s*$" text)
-            tags (when tags-str
-                   (filterv (complement str/blank?)
-                            (str/split tags-str #":")))]
-        {:type "entry"
-         :source source
-         :time time
-         :text (or body text)
-         :tags (or tags [])})
+      ;; Category + timestamp entry
+      cat-ts-match
+      (let [[_ source time text] cat-ts-match
+            [body tags] (parse-tags text)]
+        {:type "entry" :source source :time time :text body :tags tags})
 
-      other-match
-      (let [[_ source time text] other-match
-            [_ body tags-str] (re-find #"^(.*?)\s*(:[a-zA-Z0-9:]+:)\s*$" text)
-            tags (when tags-str
-                   (filterv (complement str/blank?)
-                            (str/split tags-str #":")))]
-        {:type "entry"
-         :source source
-         :time time
-         :text (or body text)
-         :tags (or tags [])})
+      ;; Category + scheduled range
+      cat-sched-match
+      (let [[_ source start end text] cat-sched-match
+            [body tags] (parse-tags text)]
+        {:type "entry" :source source :time start
+         :text (str body " (" start "-" end ")") :tags tags})
+
+      ;; Bare timestamp (fallback, no category)
+      bare-match
+      (let [[_ time text] bare-match
+            [body tags] (parse-tags text)]
+        {:type "entry" :source "Human" :time time :text body :tags tags})
+
+      ;; Bare scheduled range (fallback)
+      bare-sched
+      (let [[_ start end text] bare-sched
+            [body tags] (parse-tags text)]
+        {:type "entry" :source "Schedule" :time start
+         :text (str body " (" start "-" end ")") :tags tags})
 
       (not (str/blank? line))
       {:type "raw" :text (str/trim line)})))

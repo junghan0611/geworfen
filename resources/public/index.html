@@ -63,6 +63,7 @@
     .ag-cat-agent { color: var(--blue); }
     .ag-cat-human { color: var(--green); }
     .ag-cat-diary { color: var(--yellow); }
+    .ag-cat-sched { color: var(--mauve); }
     .ag-tags { color: var(--overlay1); }
     .ag-text { color: var(--text); }
 
@@ -212,7 +213,25 @@ function go(n) {
 }
 function goToday() { currentDate = new Date(); fetchAgenda(); }
 
+// Convert org links [[url][text]] to <a> elements, plain text stays as text nodes
+function linkify(text, parent) {
+  const re = /\[\[(https?:\/\/[^\]]+)\]\[([^\]]+)\]\]/g;
+  let last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+    const a = document.createElement('a');
+    a.href = m[1]; a.textContent = m[2];
+    a.target = '_blank'; a.rel = 'noopener';
+    a.style.color = 'var(--sapphire)'; a.style.textDecoration = 'underline';
+    parent.appendChild(a);
+    last = re.lastIndex;
+  }
+  if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+}
+
 function colorize(raw) {
+  // Emacs raw text has exact alignment via spaces.
+  // We preserve ALL original whitespace — just wrap parts in colored spans.
   return raw.split('\n').map(line => {
     const el = document.createElement('span');
     el.className = 'line';
@@ -229,45 +248,58 @@ function colorize(raw) {
       el.className += ' ag-now';
       el.textContent = line;
     }
-    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary/.test(line)) {
+    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary|Schedule/.test(line)) {
       el.className += ' ag-sep';
       el.textContent = line;
     }
-    else if (/^\s*(Agent|Human|Diary)/.test(line)) {
-      const m = line.match(/^(\s*)(Agent\([A-Z]\)|Human|Diary):?\s*/);
-      if (m) {
-        const indent = m[1];
-        const cat = m[2];
-        const rest = line.slice(m[0].length);
+    else {
+      // Match category + padding as ONE group (preserves Emacs alignment)
+      // "  Agent(T):  8:42...... text  :tags:"
+      // "  Human:     5:53...... text"
+      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
+      if (catMatch) {
+        const [, indent, catWithPad, body, tags] = catMatch;
+        const catName = catWithPad.match(/^(\w+(?:\([A-Z]\))?)/)[1];
 
+        // indent (preserves exact spaces)
+        el.appendChild(document.createTextNode(indent));
+
+        // category + its original padding (color only the name, keep spaces)
         const catSpan = document.createElement('span');
-        if (cat.startsWith('Agent')) catSpan.className = 'ag-cat-agent';
-        else if (cat === 'Human') catSpan.className = 'ag-cat-human';
-        else catSpan.className = 'ag-cat-diary';
-        catSpan.textContent = cat + ':';
-
-        const tagMatch = rest.match(/^(.*?)\s+(:[a-zA-Z0-9:]+:)\s*$/);
-        const textPart = tagMatch ? tagMatch[1] : rest;
-        const tagsPart = tagMatch ? tagMatch[2] : '';
-
-        el.textContent = indent;
+        if (catName.startsWith('Agent')) catSpan.className = 'ag-cat-agent';
+        else if (catName === 'Human') catSpan.className = 'ag-cat-human';
+        else if (catName === 'Diary') catSpan.className = 'ag-cat-diary';
+        else catSpan.className = 'ag-cat-sched';
+        catSpan.textContent = catWithPad;
         el.appendChild(catSpan);
+
+        // body text — with org link conversion
         const textSpan = document.createElement('span');
         textSpan.className = 'ag-text';
-        textSpan.textContent = ' ' + textPart;
+        linkify(body, textSpan);
         el.appendChild(textSpan);
-        if (tagsPart) {
+
+        // tags
+        if (tags) {
           const tagsSpan = document.createElement('span');
           tagsSpan.className = 'ag-tags';
-          tagsSpan.textContent = '  ' + tagsPart;
+          tagsSpan.textContent = tags;
           el.appendChild(tagsSpan);
         }
       } else {
-        el.textContent = line;
+        // No category — separators, schedule, bare entries
+        // Still process org links
+        const tagMatch = line.match(/^(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
+        const body = tagMatch ? tagMatch[1] : line;
+        const tags = tagMatch ? tagMatch[2] : '';
+        linkify(body, el);
+        if (tags) {
+          const tagsSpan = document.createElement('span');
+          tagsSpan.className = 'ag-tags';
+          tagsSpan.textContent = tags;
+          el.appendChild(tagsSpan);
+        }
       }
-    }
-    else {
-      el.textContent = line;
     }
     return el;
   });
