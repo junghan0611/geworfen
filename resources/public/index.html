@@ -347,7 +347,21 @@ document.addEventListener('keydown', (e) => {
   if (e.key === '.' || e.code === 'Period') { e.preventDefault(); goToday(); }
 });
 
-setInterval(() => { if (fmt(currentDate) === fmt(new Date())) fetchAgenda(); }, 60000);
+// Auto-refresh: if viewing today, re-fetch every 60s.
+// Also detect date change (tab open overnight → auto-jump to new day).
+let lastKnownDate = fmt(new Date());
+setInterval(() => {
+  const nowDate = fmt(new Date());
+  if (nowDate !== lastKnownDate) {
+    // Date changed (midnight crossed) — jump to new today
+    lastKnownDate = nowDate;
+    currentDate = new Date();
+    fetchAgenda();
+  } else if (fmt(currentDate) === nowDate) {
+    // Viewing today — periodic refresh
+    fetchAgenda();
+  }
+}, 60000);
 fetchAgenda();
 
 

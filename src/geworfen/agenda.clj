@@ -13,7 +13,7 @@
 
 (def ^ConcurrentHashMap cache (ConcurrentHashMap.))
 (def ^:private cache-ttl-ms
-  {:today    (* 30 1000)       ;; today: 30 seconds (stamps arrive frequently)
+  {:today    (* 60 1000)       ;; today: 60 seconds (1 min, syncthing-friendly)
    :past     (* 60 60 1000)})  ;; past dates: 1 hour (data doesn't change)
 
 (defn- cache-key ^String [date-str] (str "agenda:" date-str))
