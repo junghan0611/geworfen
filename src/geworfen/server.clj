@@ -56,7 +56,8 @@
     (let [ext (last (clojure.string/split path #"\."))
           ctype (get content-types ext "application/octet-stream")]
       {:status 200
-       :headers {"Content-Type" ctype}
+       :headers {"Content-Type" ctype
+                 "Cache-Control" "no-cache"}
        :body (io/input-stream url)})))
 
 (defn- index-handler [_request]

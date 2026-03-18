@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>geworfen — thrown into the world</title>
 
+  <!-- Umami analytics -->
+  <script defer src="https://analytics.junghanacs.com/script.js" data-website-id="c700882d-05d7-4b88-ae46-1c1d11ccadab"></script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/css@latest/dist/full.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webtui/theme-catppuccin@latest/dist/index.css">
 
@@ -187,8 +190,9 @@ let currentDate = new Date();
 const KST = 9 * 60;
 
 function fmt(d) {
-  const kst = new Date(d.getTime() + (KST + d.getTimezoneOffset()) * 60000);
-  return kst.toISOString().slice(0, 10);
+  // getTime() is already UTC epoch ms.
+  // Add KST offset (+9h) then use toISOString (which outputs UTC).
+  return new Date(d.getTime() + KST * 60000).toISOString().slice(0, 10);
 }
 
 function clampDate(d) {
@@ -331,9 +335,11 @@ async function fetchAgenda() {
   }
 }
 
+function toKST(d) {
+  return new Date(d.getTime() + KST * 60000);
+}
 function tick() {
-  const now = new Date();
-  const kst = new Date(now.getTime() + (KST + now.getTimezoneOffset()) * 60000);
+  const kst = toKST(new Date());
   document.getElementById('ml-time').textContent =
     `${String(kst.getHours()).padStart(2,'0')}:${String(kst.getMinutes()).padStart(2,'0')} KST`;
 }
