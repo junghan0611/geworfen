@@ -141,7 +141,12 @@
               parsed (assoc (parse-agenda raw) :raw raw)]
           (cache-put! date-str parsed)
           parsed))
-    {:error "out of range" :message "Only the last 14 days are available."}))
+    (let [today (LocalDate/now)
+          min-d (str (.minusDays today 14))
+          max-d (str (.plusDays today 1))]
+      {:error "out of range"
+       :message (str "This date is outside the viewable range (" min-d " to " max-d "). Use ← → to browse recent days.")
+       :range {:from min-d :to max-d}})))
 
 (defn get-today
   "Get today's agenda."

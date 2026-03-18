@@ -7,13 +7,17 @@
 
 ![geworfen v0.1 — org-agenda live on agenda.junghanacs.com](docs/screenshot-v0.1.png)
 
-*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — 43MB native binary, Emacs org-agenda served via Docker + agent-server, WebTUI Catppuccin theme, GLG-Mono font.*
+*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — 42MB native binary, Emacs org-agenda served via Docker + agent-server, WebTUI Catppuccin theme, GLG-Mono font.*
 
 ## What Is This
 
 A real-time web dashboard — not a static blog, but a transparent data nexus of one human's daily life, co-lived with AI agents.
 
 The front door is an org-agenda timeline. Behind it: existence data and agents, alive on the time axis. The same `agent-org-agenda-day` function that Emacs users see, that bots see — this page calls it too.
+
+### v0.2 — Minimalism
+
+Two panels, no chrome. Human journal + Agent stamps + Diary schedules on a single time axis. Commit links are clickable — each entry is a door to the code that made it. The design principle: **show the data, hide the interface.**
 
 ## Architecture
 

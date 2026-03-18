@@ -86,7 +86,7 @@
     /* ── Bottom panels ── */
     #panels {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1ch;
       margin-top: 1lh;
     }
@@ -109,7 +109,7 @@
 
     /* ── Mobile ── */
     @media (max-width: 72ch) {
-      #panels { grid-template-columns: 1fr 1fr; }
+      #panels { grid-template-columns: 1fr; }
     }
     @media (max-width: 48ch) {
       body { padding: 0 1ch; margin: 0; }
@@ -124,6 +124,7 @@
   <row gap-="1" align-="center" style="margin-bottom: 1lh;">
     <span style="color: var(--green); font-weight: 700;">geworfen</span>
     <span style="color: var(--overlay1);">— thrown into the world</span>
+    <span style="color: var(--surface2); font-size: 0.85em; margin-left: 2ch;">←→ day  . today</span>
   </row>
 
   <!-- ═══ Emacs Buffer ═══ -->
@@ -178,13 +179,7 @@
       </column>
     </column>
 
-    <column class="panel" box-="square" pad-="1 0">
-      <span class="panel-title">navigation</span>
-      <div is-="separator"></div>
-      <column pad-="1 1">
-        <span class="key-row"><kbd>←</kbd>/<kbd>→</kbd>  prev/next day</span>
-      </column>
-    </column>
+
   </div>
 
 <script>
@@ -314,7 +309,11 @@ async function fetchAgenda() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    if (data.error) { el.textContent = data.message || data.error; return; }
+    if (data.error) {
+      el.textContent = data.message || data.error;
+      document.getElementById('buf-info').textContent = 'out of range';
+      return;
+    }
 
     el.innerHTML = '';
     colorize(data.raw || '').forEach(span => {
@@ -350,6 +349,8 @@ document.addEventListener('keydown', (e) => {
 
 setInterval(() => { if (fmt(currentDate) === fmt(new Date())) fetchAgenda(); }, 60000);
 fetchAgenda();
+
+
 
 async function fetchStats() {
   try {
