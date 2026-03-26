@@ -38,10 +38,10 @@ fetch /api/agenda?date=  →    Clojure server          →    emacsclient
 
 | Data | Scale | Format |
 |------|-------|--------|
-| Denote notes | 3,000+ | .org |
+| Denote notes | 3,300+ | .org |
 | Bibliography | 8,200+ | .bib |
 | Git commits | 8,500+ | git |
-| Daily journal | 718+ days | .org |
+| Daily journal | 1,477+ days | .org |
 | Health records | 4,400+ | SQLite |
 | Digital garden | 2,100+ | .md |
 
