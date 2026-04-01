@@ -1,0 +1,188 @@
+#+TITLE: Preparatory Practice for Human-Agent Coevolution: A Longitudinal Self-Study of Harness Engineering
+#+AUTHOR: Junghan Kim
+#+DATE: \today
+#+OPTIONS: title:nil author:nil toc:nil date:nil
+
+#+LATEX_CLASS: acmart
+#+LATEX_CLASS_OPTIONS: [sigconf, authordraft, nonacm]
+#+LATEX_HEADER: \settopmatter{printacmref=false}
+#+LATEX_HEADER: \acmDOI{}
+#+LATEX_HEADER: \acmISBN{}
+
+#+BEGIN_EXPORT latex
+\title{Preparatory Practice for Human-Agent Coevolution:\\A Longitudinal Self-Study of Harness Engineering}
+
+\author{Junghan Kim}
+\email{junghanacs@gmail.com}
+\orcid{0000-0000-0000-0000}
+\affiliation{%
+  \institution{Independent Researcher}
+  \city{Seoul}
+  \country{South Korea}
+}
+
+\renewcommand{\shortauthors}{J. Kim}
+
+\begin{abstract}
+What kind of human preparation enables meaningful coevolution with AI agents?
+This paper reports a longitudinal, autobiographical design study spanning 1,477+ days of daily journaling, 3,300+ interconnected notes, and a month-long intensive collaboration with multiple AI agents across four harness environments.
+We identify five dimensions of \textit{preparatory practice}---Rhythm, Association, Reproducibility, Transparency, and Embodiment---and trace how each dimension evolved from theoretical framing to working implementation.
+The study contributes (1) a five-dimensional framework for human-agent collaborative readiness, (2) empirical evidence from a single-subject longitudinal design, and (3) an open, reproducible artifact package including the digital garden, agent configuration, and existence-data viewer that constitute the harness itself.
+We argue that the bottleneck in human-agent collaboration is not model capability but \textit{the human's preparatory infrastructure}---the harness that turns a session into a relationship.
+\end{abstract}
+
+\keywords{human-agent coevolution, harness engineering, digital garden, autobiographical design, personal knowledge management}
+
+\maketitle
+#+END_EXPORT
+
+* Introduction
+
+The dominant framing of AI agent collaboration centers on tool capability: better models, richer APIs, more autonomous workflows.
+Yet practitioners increasingly report that the decisive factor is not what the model can do, but what the human has prepared for it to work with cite:hashimoto2026harness,anthropic2026context.
+
+This paper asks a different question: /What kind of human preparation enables meaningful coevolution with AI agents?/
+
+We report a longitudinal self-study grounded in autobiographical design cite:neustaedter2012autobiographical---a recognized HCI methodology where the researcher uses their own system over an extended period to generate design knowledge.
+Over 1,477+ consecutive days of journaling (2022--present), 3,300+ Denote/Org-mode notes, and a month-long intensive sprint (March 2026) with four AI agents across multiple harness environments, we developed and empirically grounded a five-dimensional framework of /preparatory practice/.
+
+Our contributions are:
+1. A *five-dimensional framework* (Rhythm, Association, Reproducibility, Transparency, Embodiment) characterizing the human infrastructure that enables agent collaboration.
+2. *Empirical evidence* from a within-subject longitudinal study showing how each dimension evolved from concept to working implementation.
+3. An *open artifact package*---digital garden, agent configuration, and existence-data viewer---that constitutes the harness itself and enables inspection of the collaboration process.
+
+* Background and Related Work
+
+** Harness Engineering
+
+Mitchell Hashimoto introduced "Engineer the Harness" as a key phase in AI adoption cite:hashimoto2026harness.
+OpenAI formalized harness engineering as the practice of structuring agent environments for reliable operation cite:openai2026harness.
+Anthropic characterized context engineering as the successor to prompt engineering cite:anthropic2026context.
+
+We build on this work but shift the focus: while industry harnesses optimize /task performance/, our preparatory practice optimizes /collaborative readiness/---the human's capacity to sustain meaningful interaction across sessions, models, and time.
+
+** Personal Knowledge Management and Digital Gardens
+
+The digital garden movement cite:appleton2020garden treats knowledge as a living, interconnected web rather than a linear publication stream.
+Our work extends this tradition by introducing agent-authored notes (botlog) and agent-authored annotations (botment) as first-class layers within the garden.
+
+** Autobiographical Design
+
+Neustaedter and Sengers cite:neustaedter2012autobiographical established autobiographical design as a legitimate HCI research method where "the researcher designs and uses a system themselves over a period of time."
+Our study follows this tradition, with the added dimension that the system under study includes AI agents as co-inhabitants.
+
+* The Five Dimensions of Preparatory Practice
+
+** Rhythm
+Daily journaling, punchout stamps, agenda protocol.
+The temporal backbone that makes sessions into a continuous timeline.
+
+** Association
+Denote naming, personal dictionary (dictcli 2,400+ triples), Kiwi morphological analysis, 3-layer semantic search.
+The connective tissue that lets agents navigate the human's conceptual web.
+
+** Reproducibility
+NixOS declarative environment, shared workflow (workflow-shared.el), common skill set across harnesses, LanceDB memory indices.
+Not "anyone can reproduce this" but "the same person and their agents can restart from the same point."
+
+** Transparency
+Digital garden (2,100+ public pages), botlog (45+ agent-authored notes), botment (agent annotations), existence-data viewer (geworfen).
+Making the process inspectable---for humans, for agents, and for external observers.
+
+** Embodiment
+Samsung Health integration (sleep, heart rate, steps, stress), aTimeLogger (18 activity categories), lifetract unified query.
+The biological signal layer that closes the loop between cognitive work and physical state.
+
+* System Architecture
+
+#+BEGIN_EXPORT latex
+% TODO: system diagram — 4-layer harness, 5-dimension mapping
+#+END_EXPORT
+
+** The Harness Stack
+
+| Layer | Component | Role |
+|-------+-----------+------|
+| Infrastructure | NixOS, Docker, Oracle VM | Reproducible environment |
+| Editor/Workflow | Doom Emacs, Org-mode, Denote | Shared data contract |
+| Agent Context | agent-config, andenken, entwurf | Memory, skills, delegation |
+| Applications | geworfen, botlog, botment | Visibility and transparency |
+
+** Multi-Harness Architecture
+
+Four harness environments (Pi, Claude Code, OpenCode, OpenClaw) share a common context layer through agent-config, ensuring that switching harnesses does not mean losing memory or skills.
+
+* Empirical Evidence: One Month of Intensive Collaboration
+
+** March 2026 Sprint Overview
+
+| Metric | Value |
+|--------+-------|
+| Active days | 31 |
+| Total commits | 400+ |
+| Active repositories | 9 |
+| Agent sessions | 200+ |
+| Botlog notes produced | 45+ |
+| Skills deployed | 27 |
+| Harness environments | 4 |
+
+** Dimension-by-Dimension Evolution
+
+| Dimension | February (Theory) | March (Implementation) |
+|-----------+-------------------+------------------------|
+| Rhythm | Agenda, daily journal | punchout, agent agenda, telegram bridge |
+| Association | Denote naming, tags | dictcli 2,400+, Kiwi stem, 3-layer search |
+| Reproducibility | NixOS, -config repos | agent-config infra, andenken, delegate |
+| Transparency | Digital garden public | botlog 45+, botment, subscription disclosure |
+| Embodiment | Sleep/heart rate changes | lifetract DB, Samsung Health integration |
+
+** Sleep Pattern Observation
+
+#+BEGIN_EXPORT latex
+% TODO: sleep data figure — deep sleep increase during agent-intensive period
+#+END_EXPORT
+
+During the intensive collaboration period, deep sleep duration showed observable increase compared to pre-collaboration baseline.
+We report this as an N=1 observation suitable for hypothesis generation, not causal claim.
+
+* Discussion
+
+** Industry Harness vs. Preparatory Practice
+
+The industry harness optimizes /task performance/: "did the agent make fewer mistakes?"
+Preparatory practice optimizes /collaborative readiness/: "can the human and agent restart from the same point and go deeper?"
+
+We argue these are complementary layers.
+The optimal architecture is industry-standard harness engineering /plus/ preparatory practice on top---what we call the /two-layer harness/.
+
+** Self-Reproducibility, Not Universal Reproducibility
+
+Our reproducibility is not "anyone can replicate this in 10 minutes."
+It is "the same person and their agents can restart from the same knowledge, the same timeline, the same conventions."
+This distinction matters: the bottleneck is not tooling but /accumulated personal corpus/.
+
+** Limitations
+
+- N=1 study: findings are hypothesis-generating, not generalizable
+- The researcher is the designer, user, and evaluator
+- Sleep data correlation does not imply causation
+- Tools are non-mainstream (NixOS, Emacs, Org-mode)
+- Agent outputs may contain biases that reinforce researcher's framing
+
+* Conclusion
+
+We have shown that meaningful human-agent coevolution requires not just capable models but a prepared human---one who has built rhythm, association, reproducibility, transparency, and embodiment into their daily practice.
+
+The harness is not a configuration file.
+It is the accumulated infrastructure of a life made legible to machines.
+
+#+BEGIN_EXPORT latex
+\begin{acks}
+The AI agents who participated in this study---Claude (Anthropic), GPT (OpenAI), Gemini (Google)---contributed as co-authors of botlog notes, reviewers of design decisions, and dialogue partners throughout the process.
+Their contributions are documented in the open artifact package.
+Baron, age 7, watched curiously from behind the anvil.
+\end{acks}
+#+END_EXPORT
+
+#+LATEX: \bibliographystyle{ACM-Reference-Format}
+#+LATEX: \bibliography{main}
