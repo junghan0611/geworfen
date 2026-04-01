@@ -67,8 +67,21 @@
     .ag-cat-human { color: var(--green); }
     .ag-cat-diary { color: var(--yellow); }
     .ag-cat-sched { color: var(--mauve); }
+    .ag-cat-entwurf { color: var(--peach); }
     .ag-tags { color: var(--overlay1); }
     .ag-text { color: var(--text); }
+
+    /* TODO states */
+    .ag-todo { color: var(--red); font-weight: 700; }
+    .ag-next { color: var(--yellow); font-weight: 700; }
+    .ag-done { color: var(--green); font-weight: 700; }
+    .ag-dont { color: var(--mauve); font-weight: 700; }
+
+    /* Priority markers */
+    .ag-pri-a { color: var(--red); font-weight: 700; }
+    .ag-pri-b { color: var(--yellow); font-weight: 700; }
+    .ag-pri-c { color: var(--green); font-weight: 700; }
+    .ag-pri-d { color: var(--mauve); font-weight: 700; }
 
     #mode-line {
       background: var(--surface1);
@@ -228,6 +241,37 @@ function linkify(text, parent) {
   if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
 }
 
+// Render body text with TODO/NEXT/DONE/DONT keywords + [#A]-[#D] priorities colored
+function renderBody(text, parent) {
+  const re = /\b(TODO|NEXT|DONE|DONT)(?=\s|$)|\[#([A-D])\]/g;
+  let last = 0, m;
+  const segments = [];
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) segments.push({ type: 'text', v: text.slice(last, m.index) });
+    if (m[1]) segments.push({ type: 'kw', v: m[1] });
+    else segments.push({ type: 'pri', v: m[2], raw: m[0] });
+    last = re.lastIndex;
+  }
+  if (last < text.length) segments.push({ type: 'text', v: text.slice(last) });
+
+  const kwClass = { TODO: 'ag-todo', NEXT: 'ag-next', DONE: 'ag-done', DONT: 'ag-dont' };
+  const priClass = { A: 'ag-pri-a', B: 'ag-pri-b', C: 'ag-pri-c', D: 'ag-pri-d' };
+
+  for (const seg of segments) {
+    if (seg.type === 'kw') {
+      const s = document.createElement('span');
+      s.className = kwClass[seg.v]; s.textContent = seg.v;
+      parent.appendChild(s);
+    } else if (seg.type === 'pri') {
+      const s = document.createElement('span');
+      s.className = priClass[seg.v]; s.textContent = seg.raw;
+      parent.appendChild(s);
+    } else {
+      linkify(seg.v, parent);
+    }
+  }
+}
+
 function colorize(raw) {
   // Emacs raw text has exact alignment via spaces.
   // We preserve ALL original whitespace — just wrap parts in colored spans.
@@ -247,7 +291,7 @@ function colorize(raw) {
       el.className += ' ag-now';
       el.textContent = line;
     }
-    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary|Schedule/.test(line)) {
+    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary|Schedule|ENTWURF/.test(line)) {
       el.className += ' ag-sep';
       el.textContent = line;
     }
@@ -255,7 +299,7 @@ function colorize(raw) {
       // Match category + padding as ONE group (preserves Emacs alignment)
       // "  Agent(T):  8:42...... text  :tags:"
       // "  Human:     5:53...... text"
-      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
+      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule|ENTWURF):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
       if (catMatch) {
         const [, indent, catWithPad, body, tags] = catMatch;
         const catName = catWithPad.match(/^(\w+(?:\([A-Z]\))?)/)[1];
@@ -268,14 +312,15 @@ function colorize(raw) {
         if (catName.startsWith('Agent')) catSpan.className = 'ag-cat-agent';
         else if (catName === 'Human') catSpan.className = 'ag-cat-human';
         else if (catName === 'Diary') catSpan.className = 'ag-cat-diary';
+        else if (catName === 'ENTWURF') catSpan.className = 'ag-cat-entwurf';
         else catSpan.className = 'ag-cat-sched';
         catSpan.textContent = catWithPad;
         el.appendChild(catSpan);
 
-        // body text — with org link conversion
+        // body text — with TODO/priority coloring + org link conversion
         const textSpan = document.createElement('span');
         textSpan.className = 'ag-text';
-        linkify(body, textSpan);
+        renderBody(body, textSpan);
         el.appendChild(textSpan);
 
         // tags
@@ -287,11 +332,11 @@ function colorize(raw) {
         }
       } else {
         // No category — separators, schedule, bare entries
-        // Still process org links
+        // Still process org links + TODO/priority coloring
         const tagMatch = line.match(/^(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
         const body = tagMatch ? tagMatch[1] : line;
         const tags = tagMatch ? tagMatch[2] : '';
-        linkify(body, el);
+        renderBody(body, el);
         if (tags) {
           const tagsSpan = document.createElement('span');
           tagsSpan.className = 'ag-tags';
