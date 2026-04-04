@@ -1,0 +1,61 @@
+#+TITLE: 용어집 — Glossary
+#+DATE: 2026-04-01
+
+# 한글본(main-ko.org)과 영어본(main.org) 간 용어 대응표.
+# 논문에서 사용하는 핵심 개념을 한↔영으로 정의한다.
+
+* 히스토리
+- [2026-04-01 Wed 15:17] 용어집 생성됨. 근데 이걸 논문에서 import 하려면 테이블이 아니라 다른 양식이 필요할 듯
+
+* 핵심 개념
+
+| 한글 | English | 정의 |
+|------+---------+------|
+| 준비 실천 | Preparatory Practice | 인간-에이전트 공진화를 가능하게 하는 인간 측 인프라 구축 행위 |
+| 공진화 | Coevolution | 인간과 에이전트가 상호작용을 통해 함께 변화하는 과정 |
+| 하네스 | Harness | 인간과 에이전트 사이의 접합부. 도구와 존재의 접합 |
+| 하네싱 | Harnessing | 하네스를 통한 협업 행위. 길들이기가 아닌 공명 |
+| 분신 | Entwurf (projection) | 에이전트가 인간의 세계관 안에서 살아가는 존재 형식 |
+| 프로파일 하네스 | Profile Harness | 여러 모델을 하나의 구심점으로 정렬하는 공통 프로파일 |
+
+* 5차원
+
+| 한글 | English | 약어 |
+|------+---------+------|
+| 리듬 | Rhythm | R |
+| 연상 | Association | A |
+| 재현 | Reproducibility | Re |
+| 투명 | Transparency | T |
+| 생체 | Embodiment | E |
+
+* 시스템 구성요소
+
+| 한글 | English | 설명 |
+|------+---------+------|
+| 봇로그 | Botlog | 에이전트가 저자가 된 정식 노트 (blog의 bot 버전) |
+| 봇멘트 | Botment | 에이전트가 다는 주석/댓글 (comment의 bot 버전) |
+| 게보르펜 | Geworfen (thrownness) | 존재 데이터 뷰어. 시간축 공개 |
+| 안덴켄 | Andenken (remembrance) | 시맨틱 메모리 인프라. 벡터 검색 |
+| 엔트부르프 | Entwurf (projection) | 행동 시스템. 위임·소통·조작의 3층 |
+| 어젠다 | Agenda | org-agenda 기반 인간+에이전트 통합 타임라인 |
+| 디지털 가든 | Digital Garden | 공개 지식 정원. 불완전함의 미학 |
+| 일일일생 | One Day One Life | 매일을 하나의 삶으로 사는 실천 |
+
+* 방법론
+
+| 한글 | English | 출처 |
+|------+---------+------|
+| 자서전적 설계 | Autobiographical Design | Neustaedter & Sengers, 2012 |
+| 설계를 통한 연구 | Research through Design | Zimmerman et al., 2007 |
+| 피험자 내 종단 분석 | Within-subject Longitudinal Analysis | — |
+| 자기재현성 | Self-reproducibility | 본 연구 용어 |
+
+* 외부 개념
+
+| 한글 | English | 출처 |
+|------+---------+------|
+| 컨텍스트 엔지니어링 | Context Engineering | Anthropic, 2026 |
+| 극한 진단 | Maximal Diagnostics | Sid Sijbrandij, 2026 |
+| 샤딩된 사고 | Sharded Thinking | Andrej Karpathy |
+| 에이전트 정체성 | Agent Identity | Microsoft Entra, 2026 |
+| A2A | Agent-to-Agent Protocol | Google, 2025 |
