@@ -60,9 +60,38 @@
                  "Cache-Control" "no-cache"}
        :body (io/input-stream url)})))
 
+(defn- robots-handler [_request]
+  {:status 200
+   :headers {"Content-Type" "text/plain; charset=utf-8"}
+   :body "User-agent: *\nAllow: /\n"})
+
 (defn- index-handler [_request]
-  (or (serve-resource "public/index.html")
-      {:status 404 :body "not found"}))
+  (let [html (some-> (io/resource "public/index.html") slurp)]
+    (if html
+      (let [today-str (str (java.time.LocalDate/now))
+            data (agenda/get-day today-str)
+            raw  (or (:raw data) "")
+            ;; Build noscript block with today's agenda
+            noscript (str "<noscript>\n<pre>\n" (str/escape raw {\< "&lt;" \> "&gt;" \& "&amp;"}) "\n</pre>\n</noscript>")
+            ;; Build og:description from first few entries
+            entries (->> (:entries data)
+                        (filter #(= (:type %) "entry"))
+                        (take 5)
+                        (map #(str (:time %) " " (:text %)))
+                        (str/join ", "))
+            og-desc (if (seq entries)
+                      (subs entries 0 (min 300 (count entries)))
+                      "geworfen — thrown into the world")
+            og-tag  (str "<meta property=\"og:description\" content=\"" (str/escape og-desc {\" "&quot;"}) "\">\n")
+            ;; Insert og:description before </head>
+            html (str/replace html "</head>" (str og-tag "</head>"))
+            ;; Insert noscript before </body>
+            html (str/replace html "</body>" (str noscript "\n</body>"))]
+        {:status 200
+         :headers {"Content-Type" "text/html; charset=utf-8"
+                   "Cache-Control" "no-cache"}
+         :body html})
+      {:status 404 :body "not found"})))
 
 (defn- static-handler
   "Serve static files from public/ on classpath."
@@ -74,7 +103,8 @@
 (def app
   (ring/ring-handler
    (ring/router
-    [["/"          {:get {:handler index-handler}}]
+    [["/"            {:get {:handler index-handler}}]
+     ["/robots.txt"  {:get {:handler robots-handler}}]
      ["/api"
       ["/agenda"  {:get {:handler agenda-handler}}]
       ["/stats"   {:get {:handler stats-handler}}]
