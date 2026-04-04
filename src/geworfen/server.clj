@@ -65,11 +65,12 @@
    :headers {"Content-Type" "text/plain; charset=utf-8"}
    :body "User-agent: *\nAllow: /\n"})
 
-(defn- index-handler [_request]
+(defn- index-handler [request]
   (let [html (some-> (io/resource "public/index.html") slurp)]
     (if html
-      (let [today-str (str (java.time.LocalDate/now))
-            data (agenda/get-day today-str)
+      (let [date-str (or (get-in request [:query-params "date"])
+                         (str (java.time.LocalDate/now)))
+            data (agenda/get-day date-str)
             raw  (or (:raw data) "")
             ;; Build noscript block with today's agenda
             noscript (str "<noscript>\n<pre>\n" (str/escape raw {\< "&lt;" \> "&gt;" \& "&amp;"}) "\n</pre>\n</noscript>")
