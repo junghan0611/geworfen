@@ -4,11 +4,14 @@
   (:require [clojure.java.shell :refer [sh]]
             [clojure.string :as str]))
 
+(def ^:private socket-name
+  (or (System/getenv "GEWORFEN_EMACS_SOCKET") "server"))
+
 (defn eval-elisp
-  "Evaluate elisp via emacsclient connected to agent-server.
-   Returns the raw string result (with quotes stripped)."
+  "Evaluate elisp via emacsclient connected to the agent emacs daemon.
+   Socket name defaults to `server` and can be overridden via GEWORFEN_EMACS_SOCKET."
   [expr]
-  (let [{:keys [out err exit]} (sh "emacsclient" "-s" "agent-server" "--eval" expr)]
+  (let [{:keys [out err exit]} (sh "emacsclient" "-s" socket-name "--eval" expr)]
     (if (zero? exit)
       ;; emacsclient wraps output in quotes and escapes newlines
       (-> out
@@ -35,8 +38,8 @@
    (eval-elisp (format "(agent-org-agenda-week \"%s\")" date-str))))
 
 (defn alive?
-  "Check if agent-server is reachable."
+  "Check if the agent emacs daemon is reachable."
   []
   (try
-    (= "2" (str/trim (:out (sh "emacsclient" "-s" "agent-server" "--eval" "(+ 1 1)"))))
+    (= "2" (str/trim (:out (sh "emacsclient" "-s" socket-name "--eval" "(+ 1 1)"))))
     (catch Exception _ false)))
