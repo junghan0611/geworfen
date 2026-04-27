@@ -5,7 +5,7 @@
 *The thrower of the project is thrown in his own throw.*
 *— Heidegger*
 
-![geworfen v0.1 — org-agenda live on agenda.junghanacs.com](docs/screenshot-v0.1.png)
+![geworfen — org-agenda live on agenda.junghanacs.com](docs/screenshot.png)
 
 *Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — 42MB native binary, Emacs org-agenda served via Docker + agent-server, WebTUI Catppuccin theme, GLG-Mono font.*
 
