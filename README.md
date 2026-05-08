@@ -19,6 +19,10 @@ The front door is an org-agenda timeline. Behind it: existence data and agents, 
 
 Two panels, no chrome. Human journal + Agent stamps + Diary schedules on a single time axis. Commit links are clickable — each entry is a door to the code that made it. The design principle: **show the data, hide the interface.**
 
+### v0.3 — Reachable
+
+Past days are now bookmarkable: `?date=YYYY-MM-DD` opens any day within the ±14-day window, honored by both the noscript SSR pre-render and the JS navigator — so deep links work without JavaScript and link previews show the actual day's entries. Categories grew (`ENTWURF`, `COS`); TODO keywords and `[#A]`–`[#D]` priorities now colorize inline. See [CHANGELOG.md](CHANGELOG.md).
+
 ## Architecture
 
 ```
@@ -40,8 +44,8 @@ fetch /api/agenda?date=  →    Clojure server          →    emacsclient
 |------|-------|--------|
 | Denote notes | 3,300+ | .org |
 | Bibliography | 8,200+ | .bib |
-| Git commits | 8,500+ | git |
-| Daily journal | 1,477+ days | .org |
+| Git commits | 14,000+ | git |
+| Daily journal | 1,488+ days | .org |
 | Health records | 4,400+ | SQLite |
 | Digital garden | 2,100+ | .md |
 
@@ -77,6 +81,8 @@ nix develop -c bash
 |-----|--------|
 | `←` / `→` | Previous / next day |
 | `.` | Jump to today |
+
+URL parameter: append `?date=2026-04-19` to the URL to open a specific day directly.
 
 ## Name
 
