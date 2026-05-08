@@ -68,6 +68,7 @@
     .ag-cat-diary { color: var(--yellow); }
     .ag-cat-sched { color: var(--mauve); }
     .ag-cat-entwurf { color: var(--peach); }
+    .ag-cat-cos { color: var(--teal); }
     .ag-tags { color: var(--overlay1); }
     .ag-text { color: var(--text); }
 
@@ -298,7 +299,7 @@ function colorize(raw) {
       el.className += ' ag-now';
       el.textContent = line;
     }
-    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary|Schedule|ENTWURF/.test(line)) {
+    else if (/─{4,}|-{4,}/.test(line) && !/Agent|Human|Diary|Schedule|ENTWURF|COS/.test(line)) {
       el.className += ' ag-sep';
       el.textContent = line;
     }
@@ -306,7 +307,7 @@ function colorize(raw) {
       // Match category + padding as ONE group (preserves Emacs alignment)
       // "  Agent(T):  8:42...... text  :tags:"
       // "  Human:     5:53...... text"
-      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule|ENTWURF):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
+      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule|ENTWURF|COS):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
       if (catMatch) {
         const [, indent, catWithPad, body, tags] = catMatch;
         const catName = catWithPad.match(/^(\w+(?:\([A-Z]\))?)/)[1];
@@ -320,6 +321,7 @@ function colorize(raw) {
         else if (catName === 'Human') catSpan.className = 'ag-cat-human';
         else if (catName === 'Diary') catSpan.className = 'ag-cat-diary';
         else if (catName === 'ENTWURF') catSpan.className = 'ag-cat-entwurf';
+        else if (catName === 'COS') catSpan.className = 'ag-cat-cos';
         else catSpan.className = 'ag-cat-sched';
         catSpan.textContent = catWithPad;
         el.appendChild(catSpan);
