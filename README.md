@@ -7,7 +7,9 @@
 
 ![geworfen — org-agenda live on agenda.junghanacs.com](docs/screenshot.png)
 
-*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — 42MB native binary, Emacs org-agenda served via Docker + agent-server, WebTUI Catppuccin theme, GLG-Mono font.*
+*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — a Clojure HTTP server, compiled with GraalVM `native-image` to a 42MB standalone binary (no JVM at runtime), running in Docker and proxying to a host-side Emacs daemon via `emacsclient` + `agent-server.el` to render org-agenda. WebTUI Catppuccin theme, GLG-Mono font.*
+
+> **Note on the binary.** The native binary is the **geworfen Clojure server**, not Emacs. Emacs runs separately as a daemon on the host; the Clojure binary calls it via `emacsclient`. This project exists in part to advocate **Clojure + GraalVM** as a deployment target — fast startup, low RAM, single-file distribution.
 
 ## What Is This
 
@@ -27,16 +29,21 @@ Past days are now bookmarkable: `?date=YYYY-MM-DD` opens any day within the ±14
 
 ```
 [Browser]                     [Docker Container]           [Host]
-WebTUI + Catppuccin           geworfen binary              Emacs daemon
-GLG-Mono font                 (GraalVM native, 43MB)       agent-server.el
-fetch /api/agenda?date=  →    Clojure server          →    emacsclient
-                              http-kit + reitit             ~/org/ (agenda files)
-                              per-date cache (30s/1h)
+WebTUI + Catppuccin           geworfen Clojure server      Emacs daemon
+GLG-Mono font                 compiled to GraalVM          agent-server.el
+                              native binary (43MB,
+                              no JVM at runtime)
+fetch /api/agenda?date=  →    http-kit + reitit       →    emacsclient
+                              per-date cache (30s/1h)      ~/org/ (agenda files)
 ```
+
+The 43MB binary is the Clojure web server only — Emacs is a separate
+process on the host. The Clojure server shells out to `emacsclient`,
+which talks to the running Emacs daemon over a Unix socket.
 
 - 100 visitors hitting the same date = **1 emacsclient call** (cached)
 - 10 visitors on 10 different dates = 10 × 50ms = 500ms serialized
-- Native binary: **instant startup**, ~30MB RAM, no JVM needed
+- Clojure server as GraalVM native binary: **instant startup**, ~30MB RAM, no JVM at runtime
 
 ## Existence Data
 
@@ -52,18 +59,19 @@ fetch /api/agenda?date=  →    Clojure server          →    emacsclient
 ## Build & Run
 
 ```bash
-# Development (JVM)
+# Development — Clojure on the JVM
 nix develop -c bash
 clj -M:run                    # server on port 3333
 
-# Production (native binary)
+# Production — Clojure compiled to a GraalVM native binary
 nix develop -c bash
-./run.sh build                # GraalVM native-image (~31s)
-./run.sh serve                # run binary (instant startup)
+./run.sh build                # clj uber → GraalVM native-image (~31s)
+./run.sh serve                # run native binary (instant startup, no JVM)
 
 # Docker (recommended for deployment)
-# geworfen binary inside container,
-# connects to host Emacs via emacsclient socket mount
+# The Clojure native binary runs inside the container.
+# Emacs stays on the host; the container connects to it via a
+# mounted emacsclient socket — Emacs itself is NOT shipped in the image.
 ```
 
 ## API

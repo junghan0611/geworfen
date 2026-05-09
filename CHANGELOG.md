@@ -43,7 +43,8 @@ Live at <https://agenda.junghanacs.com>.
 
 ## [0.2.0] — 2026-03-17
 
-First public milestone — minimalist UI, native binary, live deploy.
+First public milestone — minimalist UI, Clojure server shipped as a
+GraalVM `native-image` binary (no JVM at runtime), live deploy.
 
 ### Added
 - WebTUI org-agenda viewer — Catppuccin theme, GLG-Mono font.
@@ -55,7 +56,10 @@ First public milestone — minimalist UI, native binary, live deploy.
 - Mobile responsive layout.
 - `/api/stats` — dynamic existence data counts.
 - `/api/trigger` — invalidate today's cache after agent stamps.
-- GraalVM native-image build — 43 MB single binary, instant startup.
+- GraalVM `native-image` build of the Clojure server — 43 MB single
+  binary, instant startup, no JVM at runtime. (The binary is only the
+  geworfen HTTP server; Emacs runs separately on the host and is
+  reached via `emacsclient`.)
 - Per-date TTL cache so 100 visitors on the same date = 1
   `emacsclient` call.
 
