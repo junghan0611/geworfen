@@ -437,9 +437,9 @@ async function fetchStats() {
       ['bibliography', f(d.bibliography)],
       ['commits', f(d.commits)],
       ['journal', f(d.journal) + 'd'],
-      ['health', f(d.health)],
+      d.health != null ? ['health', f(d.health) + 'd'] : null,
       ['garden', f(d.garden)],
-    ].map(([k,v]) =>
+    ].filter(Boolean).map(([k,v]) =>
       `<div class="stat-row"><span class="stat-label">${k}</span><span class="stat-value">${v}</span></div>`
     ).join('');
   } catch(e) {}

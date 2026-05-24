@@ -1,6 +1,7 @@
 (ns geworfen.stats
   "Existence data stats — simple file counts."
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [geworfen.db :as db])
   (:import [java.time LocalDate]
            [java.time.temporal ChronoUnit]))
 
@@ -39,7 +40,8 @@
                   :bibliography 8208  ;; TODO: bibcli query
                   :commits      8557  ;; TODO: git count
                   :journal     (journal-days)
-                  :health       4489  ;; TODO: lifetract.db query
+                  ;; lifetract.db distinct sleep days. nil if DB unreachable.
+                  :health      (db/sleep-days)
                   :garden      (count-files (home "/repos/gh/notes/content") ".md")}]
         (reset! cache {:data data :ts (System/currentTimeMillis)})
         data))))

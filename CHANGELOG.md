@@ -4,6 +4,29 @@ All notable changes to **geworfen** are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] — 2026-05-24
+
+`health` stat이 lifetract.db에서 실제 수면 일수를 읽기 시작했다.
+placeholder 4489 → **2,573d** (2017-03-04 이래 sleep row가 있는 날 수).
+새 sleep row가 들어오면 1시간 캐시 만료 후 자연 갱신.
+
+### Added
+- `geworfen.db` ns — xerial `sqlite-jdbc` 로 lifetract.db read-only
+  접근. URI 문법 `jdbc:sqlite:file:...?immutable=1` 로 WAL/shm 무시
+  + locking 비활성, ro 마운트에서 안전. 매 호출마다 새 connection
+  을 열어 외부 갱신을 자연 반영.
+- `LIFETRACT_DB` 환경변수로 DB 경로 override.
+
+### Changed
+- `/api/stats` 의 `health` 자리가 lifetract.db의
+  `COUNT(DISTINCT date(start_time)) FROM sleep` 결과를 반환. DB가
+  없거나 쿼리가 실패하면 `null`, frontend 는 해당 줄을 그리지 않음.
+- `health` 표시 단위에 `d` suffix (journal 과 동일 단위축).
+
+### Infra
+- 페어 변경: `nixos-config` `docker/geworfen/docker-compose.yml` 에
+  `~/repos/gh/self-tracking-data/lifetract.db` ro 마운트 한 줄 추가.
+
 ## [0.3.0] — 2026-05-08
 
 Live at <https://agenda.junghanacs.com>.
@@ -63,5 +86,6 @@ GraalVM `native-image` binary (no JVM at runtime), live deploy.
 - Per-date TTL cache so 100 visitors on the same date = 1
   `emacsclient` call.
 
+[0.3.1]: https://github.com/junghan0611/geworfen/releases/tag/v0.3.1
 [0.3.0]: https://github.com/junghan0611/geworfen/releases/tag/v0.3.0
 [0.2.0]: https://github.com/junghan0611/geworfen/releases/tag/v0.2.0

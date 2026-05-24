@@ -18,7 +18,8 @@
                                  geworfen.server
                                  geworfen.agenda
                                  geworfen.emacs
-                                 geworfen.stats]})
+                                 geworfen.stats
+                                 geworfen.db]})
   (b/uber {:class-dir class-dir
            :uber-file uber-file
            :basis     @basis
