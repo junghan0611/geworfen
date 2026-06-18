@@ -1,18 +1,20 @@
 # NOW
-- Current: v2026.6.18 release prep 커밋 완료(ops/ 자가복구 인프라 + CHANGELOG).
-  사이트 정상(HTTP 200). 데몬 자가복구 systemd화 + linger 완료, kill 6초 복구 검증.
-- Next: GLG 승인 시 → `git tag v2026.6.18` → push → GitHub release → agenda stamp.
-- Blocker: none (태그/push는 GLG 승인 대기)
-- Read: `ops/README.md` (데몬 운영 SSOT), `CHANGELOG.md`
+- Current: v2026.6.18 릴리즈 완료(tag/push/GitHub release/stamp).
+  사이트 정상(HTTP 200), 데몬 자가복구 systemd 정착.
+- Next: 데몬 자가복구 **관찰** — `systemctl --user show agent-emacs -p NRestarts`
+  추이로 "왜 죽나" 근본 원인 추적. 현재 미확정(OOM 아님), `Linger=no`가
+  유력 조각이었고 linger를 켜 그 경로는 차단함. NRestarts가 자주 오르면
+  그때 시각·메모리·직전 eval 확인.
+- Blocker: none
+- Read: `ops/README.md` (디버그 명령), `journalctl --user -u agent-emacs`
 - Do not touch: nixos-config 안 건드림. systemd 유닛 SSOT는 `ops/systemd/`,
   설치 위치(`~/.config/systemd/user/`)는 거기서 동기화만.
 
 # RECENT
-- [2026-06-18] 사이트 HTTP 500 → emacs `server` 데몬 **dead**(소켓 소멸).
-  어제(6/17)는 **hang**. 원인 미확정(OOM 아님), `Linger=no`가 유력 조각.
-  → systemd user `agent-emacs.service`(Restart=always) + watchdog timer(1분)
-  + `enable-linger`로 자가복구화. SIGKILL 테스트 6초 복구 검증.
-  유닛 사본·운영노트를 `ops/`에 기록. cron `healthcheck.sh`는 deprecated(중복).
+- [2026-06-18] **v2026.6.18 릴리즈** — emacs 데몬 자가복구 인프라(systemd user
+  service `Restart=always` + watchdog timer 1분 + `enable-linger`). SIGKILL
+  6초 복구 검증. 사이트 두 번 HTTP 500(6/17 hang, 6/18 dead) 겪고 정착.
+  버전 체계 SemVer 0.x → **CalVer** 전환. cron `healthcheck.sh` deprecated.
 - [2026-05-24] v0.3.1 — `health` stat을 lifetract.db 실측 수면 일수로 전환.
 
 # LEDGER
