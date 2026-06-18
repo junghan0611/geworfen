@@ -1,8 +1,33 @@
 # Changelog
 
 All notable changes to **geworfen** are recorded here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
-versions follow [Semantic Versioning](https://semver.org/).
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Versions are CalVer date snapshots — `vYYYY.M.D`, evolving along the time
+axis. (Pre-2026.6 tags used SemVer `0.x`; kept as-is for history.)
+
+## [2026.6.18] — emacs 데몬 자가복구 인프라
+
+호스트 emacs `server` 데몬 자가복구를 systemd user 서비스로 정착.
+6/17 hang·6/18 dead로 사이트가 두 번 HTTP 500을 냈고, 데몬 가용성이
+곧 geworfen 가용성임이 드러나 운영 인프라를 repo에 SSOT로 기록했다.
+
+### Added
+- `ops/systemd/` — emacs 데몬 자가복구 systemd user 유닛 3종:
+  `agent-emacs.service` (`Restart=always`, **dead** 복구),
+  `agent-emacs-watchdog.timer` (1분 ping, **hang** 복구),
+  그리고 `loginctl enable-linger` (세션 무관 상주).
+  SIGKILL 테스트로 6초 자동 복구 검증.
+- `ops/README.md` — 데몬 의존 구조·설치·디버그(`journalctl --user -u
+  agent-emacs`)·원인 분석 운영 노트.
+- `NEXT.md` — 세션 핸드오프(NOW/RECENT/LEDGER).
+
+### Changed
+- `README.md` Architecture에 데몬 자가복구(`ops/README.md`) 링크 추가.
+
+### Notes
+- nixos-config 불변경. 유닛 SSOT는 `ops/systemd/`, 설치 위치
+  `~/.config/systemd/user/`는 거기서 동기화만.
+- cron `agent-server-healthcheck.sh`는 systemd로 역할이 이관되어 deprecated.
 
 ## [0.3.1] — 2026-05-24
 
