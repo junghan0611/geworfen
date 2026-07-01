@@ -10,6 +10,10 @@ After=default.target
 
 [Service]
 Type=simple
+# systemd --user 기본 PATH 는 systemd bin 뿐이라 데몬이 git 등 외부 프로그램을
+# 못 찾는다(denote 의 git 연산이 조용히 실패, 로그에 "Searching for program git").
+# NixOS 사용자 프로파일 경로를 명시로 준다 (watchdog 의 timeout 부재와 같은 계열).
+Environment=PATH=/run/wrappers/bin:/home/junghan/.nix-profile/bin:/etc/profiles/per-user/junghan/bin:/run/current-system/sw/bin
 # --init-directory 가 없으면 시작 실패하므로 미리 생성
 ExecStartPre=/run/current-system/sw/bin/mkdir -p /tmp/agent-emacs-init
 # --fg-daemon: 포그라운드 데몬 → systemd Type=simple 로 PID 추적 가능
