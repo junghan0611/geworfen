@@ -1,6 +1,7 @@
 # NOW
-- Current: v2026.7.1 릴리즈 준비 — 자가복구(watchdog) 회수, `Restart=no`,
-  webtui CDN 버전 고정, `AGENTS.md` 신설. 사이트 정상(HTTP 200), 데몬 active.
+- Current: v2026.7.1 릴리즈 완료(tag/push/GitHub release/stamp) — 자가복구
+  (watchdog) 회수, `Restart=no`, webtui CDN 버전 고정, `AGENTS.md` 신설.
+  사이트 정상(HTTP 200), 데몬 active.
 - Next: **데몬이 얼마나 오래 사나 관찰**. `Restart=no`라 죽으면 그대로 멈추고
   agenda가 빈다 → 그때 `journalctl --user -u agent-emacs.service`로 시각·직전
   eval·메모리를 잡아 근본 원인 추적 후 수동 기동. 목표는 한두 달 무중단.
