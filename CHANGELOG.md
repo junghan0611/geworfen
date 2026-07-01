@@ -5,6 +5,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions are CalVer date snapshots — `vYYYY.M.D`, evolving along the time
 axis. (Pre-2026.6 tags used SemVer `0.x`; kept as-is for history.)
 
+## [2026.7.1] — 자가복구 회수 · webtui 버전 고정
+
+6/18에 넣은 emacs 데몬 "자가복구"가 실은 자해 루프였다. watchdog의 ping
+명령 `timeout 5 emacsclient ...` 가 systemd `--user` PATH에 `timeout`이 없어
+매번 exit 127(command not found)로 떨어졌고, `|| restart` 가 발동해 **멀쩡한
+데몬을 6/18~7/1 동안 16,354회** 죽였다. 진짜 다운은 없었고 로그만 오염됐다.
+자동 복구는 "점점 더 안 죽는다"는 목표와 반대로 죽는 신호를 지운다고 보고,
+자가복구를 통째로 걷어냈다.
+
+### Removed
+- `ops/systemd/agent-emacs-watchdog.service` / `.timer` — 자해 루프. 제거.
+
+### Changed
+- `agent-emacs.service` `Restart=always` → **`Restart=no`**. 데몬이 죽으면
+  자동 부활 없이 그대로 두어 문제가 즉시 드러나게 한다(핵심 개인 서버).
+  다시 켜기는 사람/에이전트 수동 (`systemctl --user start`).
+- `resources/public/index.html` — WebTUI CDN을 `@latest`에서 **버전 고정**:
+  `@webtui/css@0.1.9`, `@webtui/theme-catppuccin@0.0.5`. 재현성 확보 +
+  `theme-catppuccin`의 오발행 버전(`26.2.0` 등)에 `@latest`가 끌려갈 위험 차단.
+- `ops/README.md` / `README.md` — 자가복구 서술을 "재시작 안 함" 운영
+  철학으로 정정.
+
+### Added
+- `AGENTS.md` — repo baseline. 특히 **페이지 검증**: `/` 는 JS가
+  `fetch('/api/agenda')` 로 채우는 SPA라 `curl` 로는 엔트리가 비어 보인다.
+  진실은 `/api/agenda`·`/api/stats` 를 직접 조회해야 한다(2026-07-01에 이
+  함정으로 정상 사이트를 장애로 오판한 기록을 남김).
+
 ## [2026.6.18] — emacs 데몬 자가복구 인프라
 
 호스트 emacs `server` 데몬 자가복구를 systemd user 서비스로 정착.
@@ -111,6 +139,8 @@ GraalVM `native-image` binary (no JVM at runtime), live deploy.
 - Per-date TTL cache so 100 visitors on the same date = 1
   `emacsclient` call.
 
+[2026.7.1]: https://github.com/junghan0611/geworfen/releases/tag/v2026.7.1
+[2026.6.18]: https://github.com/junghan0611/geworfen/releases/tag/v2026.6.18
 [0.3.1]: https://github.com/junghan0611/geworfen/releases/tag/v0.3.1
 [0.3.0]: https://github.com/junghan0611/geworfen/releases/tag/v0.3.0
 [0.2.0]: https://github.com/junghan0611/geworfen/releases/tag/v0.2.0

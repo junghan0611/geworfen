@@ -1,8 +1,11 @@
 [Unit]
 Description=Agent Emacs daemon (geworfen / openclaw backend, socket=server)
 Documentation=https://github.com/junghan0611/geworfen
-# 자기복구: 죽으면(dead) systemd가 2초 안에 재시작.
-# hang(프로세스는 살아있으나 무응답)은 agent-emacs-watchdog.timer가 잡는다.
+# 죽으면 그대로 둔다 — 자동 재시작 없음(Restart=no).
+# openclaw 백엔드이자 핵심 개인 서버라, 데몬이 죽으면 문제가 즉시 드러나야
+# 한다(agenda 엔트리 사라짐). 자동 복구로 문제를 숨기지 않는다. 목표는
+# 자동 부활이 아니라, 근본을 고쳐 한두 달씩 안 죽는 것.
+# 다시 켤 때: systemctl --user start agent-emacs.service (사람/에이전트 수동).
 After=default.target
 
 [Service]
@@ -11,8 +14,7 @@ Type=simple
 ExecStartPre=/run/current-system/sw/bin/mkdir -p /tmp/agent-emacs-init
 # --fg-daemon: 포그라운드 데몬 → systemd Type=simple 로 PID 추적 가능
 ExecStart=/run/current-system/sw/bin/emacs --init-directory=/tmp/agent-emacs-init --fg-daemon=server --load /home/junghan/.doom.d/bin/agent-server.el
-Restart=always
-RestartSec=2
+Restart=no
 # agent-server.el 로드가 느릴 수 있어 여유를 둔다
 TimeoutStartSec=120
 

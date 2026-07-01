@@ -1,4 +1,4 @@
-# geworfen 운영 노트 — emacs `server` 데몬 자가복구
+# geworfen 운영 노트 — emacs `server` 데몬
 
 geworfen은 org-agenda 데이터를 **호스트의 emacs `server` 데몬**에서
 `emacsclient`로 가져온다 (`geworfen.emacs/eval-elisp`). 따라서 이 데몬이
@@ -10,46 +10,61 @@ geworfen은 org-agenda 데이터를 **호스트의 emacs `server` 데몬**에서
     → [Host: emacs --fg-daemon=server --load ~/.doom.d/bin/agent-server.el]
 ```
 
-## 자가복구 구조 (systemd user, 2026-06-18~)
+## 운영 철학 — 자동 복구 안 함 (2026-07-01~)
 
-nixos-config를 건드리지 않고 `~/.config/systemd/user/` 에 명령형으로 설치한다.
-이 디렉토리(`ops/systemd/`)가 유닛의 SSOT — 수정은 여기서 하고 동기화한다.
+이 서버는 openclaw 백엔드이자 핵심 개인 서버다. 데몬이 죽으면 **문제가
+즉시 드러나야** 한다(agenda 엔트리가 사라진다). 자동 재시작으로 증상을
+숨기지 않는다. 목표는 자동 부활이 아니라, **근본을 고쳐 한두 달씩 안 죽는
+것**이다. 죽으면 그대로 두고, 사람/에이전트가 원인을 보고 나서 켠다.
 
-| 유닛 | 동작 | 잡는 케이스 |
-|---|---|---|
-| `agent-emacs.service` | `Restart=always`, 2초 후 재기동. systemd가 데몬 PID를 소유 | **dead** (소켓 소멸) |
-| `agent-emacs-watchdog.timer` | 1분마다 ping, 무응답이면 `systemctl restart` | **hang** (소켓은 있으나 무응답) |
-| `loginctl enable-linger` | 로그아웃·세션 종료와 무관하게 데몬 상주 | 세션 종료로 인한 죽음 |
+| 유닛 | 동작 |
+|---|---|
+| `agent-emacs.service` | `Restart=no`. systemd가 데몬 PID를 소유하되 죽으면 **자동 부활 없음** |
+| `loginctl enable-linger` | 로그아웃·세션 종료와 무관하게 부팅 시 상주 |
+
+`ops/systemd/`가 유닛의 SSOT — 수정은 여기서 하고 설치 위치로 동기화한다.
+
+### watchdog을 뺀 이유 (2026-06-18 → 2026-07-01)
+
+6/18~7/1 동안 `agent-emacs-watchdog.timer`(1분마다 ping → 무응답이면
+재시작)를 뒀는데, 이게 **자가복구가 아니라 자해 루프**였다. ping 명령이
+`timeout 5 emacsclient ...` 였는데 systemd `--user` 서비스 PATH엔 `timeout`
+바이너리가 없어 매번 `command not found`(exit 127)로 떨어졌고, `|| restart`가
+발동해 **emacs에 ping을 던져본 적도 없이** 멀쩡한 데몬을 매 1분 죽였다.
+누적 **16,354회** 재시작. 진짜 다운은 없었는데 로그만 오염됐다. 제거했다.
+
+`agent-emacs.service`의 `Restart=always`도 같은 이유로 뺐다 — 자동 부활은
+"점점 더 안 죽는다"는 목표와 반대로, 죽는 신호를 지운다.
 
 ## 설치 / 동기화
 
 ```bash
 # repo → 설치 위치 동기화
-cp ops/systemd/*.service ops/systemd/*.timer ~/.config/systemd/user/
+cp ops/systemd/agent-emacs.service ~/.config/systemd/user/
 loginctl enable-linger "$USER"          # 1회, 세션 무관 상주
 systemctl --user daemon-reload
 systemctl --user enable --now agent-emacs.service
-systemctl --user enable --now agent-emacs-watchdog.timer
 ```
 
 > 유닛의 경로(`/home/junghan`, `/run/current-system/sw/bin/...`)는 junghan의
 > NixOS 환경 기준이다. 다른 환경에서는 경로를 맞춰라.
 
+## 죽었을 때 — 다시 켜기
+
+```bash
+systemctl --user start agent-emacs.service      # 수동 기동
+/run/current-system/sw/bin/emacsclient -s server --eval '(+ 1 1)'   # 응답 확인 → 2
+```
+
 ## 디버그 — "왜 죽었나"
 
 ```bash
 journalctl --user -u agent-emacs.service        # 데몬이 언제·왜 죽었는지
-journalctl --user -u agent-emacs-watchdog        # hang 감지 이력
-systemctl --user show agent-emacs -p NRestarts   # 재시작 횟수 누적
+systemctl --user show agent-emacs -p NRestarts   # 재시작 횟수 (Restart=no면 0 유지)
 loginctl show-user "$USER" -p Linger             # Linger=yes 여야 함
 ```
 
-`NRestarts`가 자주 오르면 그때의 시각·메모리·직전 eval을 보고 근본 원인을
-추적한다. 현재까지: OOM 증거 없음. 어제(6/17) hang, 오늘(6/18) dead로 증상이
-달라 단일 원인 미확정. `Linger=no` 였던 것이 유력한 한 조각(데몬이 로그인
+`Restart=no`라 `NRestarts`는 사람이 켜지 않는 한 오르지 않는다. 데몬이
+죽어 있으면 그 시각·메모리·직전 eval을 보고 근본 원인을 추적한 뒤 켠다.
+현재까지 OOM 증거는 없다. `Linger=no`였던 것이 과거 한 조각(데몬이 로그인
 세션에 묶여 세션 종료 시 함께 죽음) — linger를 켜 이 경로는 차단했다.
-
-## Deprecated
-
-`~/.doom.d/bin/agent-server-healthcheck.sh` (cron `*/5` 용)는 이 systemd
-구조로 역할이 넘어가 중복이다. cron에 등록된 적은 없었다.

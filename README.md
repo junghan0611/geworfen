@@ -41,8 +41,10 @@ The 43MB binary is the Clojure web server only — Emacs is a separate
 process on the host. The Clojure server shells out to `emacsclient`,
 which talks to the running Emacs daemon over a Unix socket.
 
-Because that host Emacs daemon is a hard dependency, it self-heals via
-systemd user units — see [`ops/README.md`](ops/README.md).
+Because that host Emacs daemon is a hard dependency, its lifecycle runs
+under a systemd user unit with **no auto-restart** — a death surfaces
+immediately (empty agenda) instead of being silently papered over. See
+[`ops/README.md`](ops/README.md).
 
 - 100 visitors hitting the same date = **1 emacsclient call** (cached)
 - 10 visitors on 10 different dates = 10 × 50ms = 500ms serialized

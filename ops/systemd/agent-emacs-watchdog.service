@@ -1,9 +1,0 @@
-[Unit]
-Description=Agent Emacs hang watchdog — ping 실패 시 데몬 재시작
-After=agent-emacs.service
-
-[Service]
-Type=oneshot
-# 소켓은 살아있는데 응답이 없는 hang(어제 6/17 케이스)을 잡는다.
-# pkill 대신 systemctl restart 로 단일 소유자(systemd) 일관성 유지.
-ExecStart=/run/current-system/sw/bin/bash -c 'timeout 5 /run/current-system/sw/bin/emacsclient -s server --eval "(+ 1 1)" >/dev/null 2>&1 || { echo "[watchdog] hang/dead detected, restarting agent-emacs"; /run/current-system/sw/bin/systemctl --user restart agent-emacs.service; }'
