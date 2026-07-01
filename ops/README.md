@@ -56,6 +56,24 @@ systemctl --user start agent-emacs.service      # 수동 기동
 /run/current-system/sw/bin/emacsclient -s server --eval '(+ 1 1)'   # 응답 확인 → 2
 ```
 
+## 알려진 hang 원인 — org-agenda 대화형 프롬프트 (2026-07-01)
+
+데몬이 죽는 게 아니라 **살아서 멈추는(hang)** 대표 케이스. `org-agenda-files`에
+리네임·삭제된 파일이 남으면 `org-check-agenda-file`이 헤드리스 데몬에
+`[R]emove from list or [A]bort?`를 묻는데, `--fg-daemon`엔 답할 터미널이 없어
+**영구 hang** → geworfen의 emacsclient 호출이 블록 → 전 페이지 500/000.
+
+- 2026-07-01 사례: botlog 논문 파일 제목 변경 → denote 리네임 → org-agenda가
+  옛 이름을 stale로 물고 프롬프트 → 데몬 hang → agenda 다운.
+- **근본 수정은 이 repo가 아니라 host `doomemacs-config/bin/agent-server.el`**:
+  `(setq org-agenda-skip-unavailable-files t)` — 없는 파일을 프롬프트 대신 skip.
+- 진단: `timeout 8 emacsclient -s server --eval '(+ 1 1)'` → exit 124면 hang.
+  `journalctl --user -u agent-emacs.service`에서 `[R]emove from list` 확인.
+- 복구: `systemctl --user restart agent-emacs.service` → `docker restart geworfen`.
+
+> autoheal이 이 hang을 **컨테이너 재시작으로만** 대응하면 근인(데몬)을 못 고치고
+> 무한 루프로 원인을 가린다. 데몬 자체를 재기동해야 한다.
+
 ## 디버그 — "왜 죽었나"
 
 ```bash
