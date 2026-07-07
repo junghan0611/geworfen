@@ -16,7 +16,7 @@ geworfen이 **어디를 향하는가**. `NEXT.md`가 다음 한 걸음이라면 
 
 ## 북극성 — arXiv 논문
 
-`docs/main.org`는 4월에 이미 거의 완성된 ACM 초안(8~10쪽 상당)이다. 이걸 **새로
+`docs/paper/geworfen.org`는 4월에 이미 거의 완성된 ACM 초안(8~10쪽 상당)이다. 이걸 **새로
 쓰는 게 아니라 6·7월 실증으로 갱신**해 **arXiv `cs.HC`**에 올린다. 논문 제목:
 *"Preparatory Practice for Human-Agent Coevolution: A Longitudinal Self-Study of
 Harness Engineering."*
@@ -35,8 +35,9 @@ Harness Engineering."*
    4월엔 하네스가 개념에 가까웠고, 지금은 실행체가 생긴 뒤의 논문이다.
 3. **stale 수치 자동화** — `1,477→1,565`일, `3,300→3,561`노트, `2,100→2,248`가든.
    org export 매크로(`{{{notes-count}}}` 등)로 갱신.
-4. **잔여** — `system diagram` / `sleep figure` 2개 TODO, `main.bib` cite 실체,
-   ACM sigconf → arXiv `cs.HC` 포맷 정렬.
+4. **잔여** — `system diagram` / `sleep figure` 2개 TODO(→ `png/`), `geworfen.bib`
+   cite 실체 + cite 경계 1건(geworfen.org:46 `---a`), ACM sigconf → arXiv `cs.HC`
+   포맷 정렬, HTML 초록/저자 dual-target(현재 `#+BEGIN_EXPORT latex`라 HTML 손실).
 
 ## 기술 축 — 페이지 개선 = 표현 확장 = 증거 생성
 

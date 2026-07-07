@@ -185,4 +185,4 @@ Baron, age 7, watched curiously from behind the anvil.
 #+END_EXPORT
 
 #+LATEX: \bibliographystyle{ACM-Reference-Format}
-#+LATEX: \bibliography{main}
+#+LATEX: \bibliography{geworfen}

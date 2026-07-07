@@ -1,6 +1,10 @@
 # Org-mode to ArXiv (ACM format) Pipeline Template
 
-이 디렉토리는 Emacs `org-mode` 파일을 기반으로 ACM의 `acmart` LaTeX 클래스를 활용하여 ArXiv 제출용 논문 PDF를 생성하는 파이프라인의 완성된 샘플입니다.
+> **실제 논문은 [`paper/`](./paper/) 에 있다** — `geworfen.org`(영문 SSOT) /
+> `geworfen-ko.org`(한글 씨앗) → `make pdf` / `make html`. 이 README와 `sample.*`
+> 는 그 파이프라인의 **arxiv-acm 템플릿 참조**로 남긴다(변환 로직 SSOT=memex-kb).
+
+이 디렉토리의 `sample.*`는 Emacs `org-mode` 파일을 기반으로 ACM의 `acmart` LaTeX 클래스를 활용하여 ArXiv 제출용 논문 PDF를 생성하는 파이프라인의 완성된 샘플입니다 (빌드 스크립트 `build.el`/`Makefile`은 `paper/`로 옮겨짐).
 
 ## 파일 구성
 

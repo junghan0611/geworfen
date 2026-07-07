@@ -2,12 +2,12 @@
 - Current: v2026.7.1 이후 **데몬 신뢰성 뿌리 수정 3건**(watchdog 제거·org-agenda
   hang·PATH) + 리포 중심을 `ROADMAP.md`로 정렬 + botlog `20260331T123550`에
   논문 재개 헤딩. 사이트 정상(HTTP 200, ping=2).
-- Next: **논문 1층 세우기** — Method + 최소실험(A/B, 5지표)을 `docs/main-ko.org`
+- Next: **논문 1층 세우기** — Method + 최소실험(A/B, 5지표)을 `docs/paper/geworfen-ko.org`
   본문에 이식(코드 아님, botlog `[2026-04-03]` 재료 이동 = arXiv 방어선). 이후
   March→July 실증 갱신 + stale 수치 자동화. 축·순서 상세는 `ROADMAP.md`.
 - Blocker: none
 - Read: `ROADMAP.md`(북극성·축), `AGENTS.md`(검증·운영), botlog `20260331T123550`
-  (논문 워크로그 SSOT), `docs/main.org`·`main-ko.org`(논문 본체)
+  (논문 워크로그 SSOT), `docs/paper/geworfen.org`·`geworfen-ko.org`(논문 본체)
 - Do not touch: nixos-config 안 건드림. systemd 유닛 SSOT는 `ops/systemd/`,
   설치 위치(`~/.config/systemd/user/`)는 거기서 동기화만.
 
@@ -20,7 +20,7 @@
   회신. **셋 다 systemd `--user` 최소 PATH가 공통 뿌리**(timeout·git 부재).
   진단·복구 절차는 `ops/README.md`.
 - [2026-07-01] **ROADMAP.md 신설** — arXiv 논문을 북극성으로, 기술축(관측성/
-  시간축/데이터축)을 "논문 증거 생성기"로 정렬. `docs/main.org`가 이미 8~10쪽 ACM
+  시간축/데이터축)을 "논문 증거 생성기"로 정렬. `docs/paper/geworfen.org`가 이미 8~10쪽 ACM
   초안임을 재확인. Perplexity 논문 대조로 human-side expansion 프레임.
 - [2026-07-01] **v2026.7.1** — 6/18 "자가복구"가 자해 루프였음 규명(watchdog ping이
   `timeout` 부재로 16,354회 재시작). watchdog 제거 + `Restart=no`. webtui 버전 고정.

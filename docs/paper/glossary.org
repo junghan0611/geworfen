@@ -1,7 +1,7 @@
 #+TITLE: 용어집 — Glossary
 #+DATE: 2026-04-01
 
-# 한글본(main-ko.org)과 영어본(main.org) 간 용어 대응표.
+# 한글본(geworfen-ko.org)과 영어본(geworfen.org) 간 용어 대응표.
 # 논문에서 사용하는 핵심 개념을 한↔영으로 정의한다.
 
 * 히스토리

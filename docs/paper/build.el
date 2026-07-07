@@ -25,6 +25,13 @@
 (setq org-latex-pdf-process
       '("latexmk -f -pdf -interaction=nonstopmode -output-directory=%o %f"))
 
+;; memex-kb paper_build.el 에서 흡수 (변환기 SSOT). 둘 다 방어용:
+;;  - 미해결 fig 참조([[#fig..][??]])에서 export 가 멈추지 않게
+;;  - 에러 시 org AST 덤프로 로그가 수백MB 로 터지는 것 방지
+(setq org-export-with-broken-links t)
+(setq debug-on-error nil
+      backtrace-on-error-noninteractive nil)
+
 (let ((org-file (car command-line-args-left)))
   (when org-file
     (find-file org-file)

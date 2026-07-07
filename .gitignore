@@ -25,4 +25,9 @@ public/build/
 *.log
 *.out
 *.synctex.gz
-# Keep .pdf and .tex for reproducibility
+
+# 논문 생성 산출물은 커밋하지 않는다 — 재현 세트 = org SSOT + build.el/Makefile/flake.nix
+# (docs/ 로 앵커: SPA 소스 resources/public/index.html 은 건드리지 않는다)
+docs/**/*.pdf
+docs/**/*.tex
+docs/**/*.html
