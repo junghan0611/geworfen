@@ -8,6 +8,9 @@
   March→July 실증 갱신 + stale 수치 자동화. 축·순서 상세는 `ROADMAP.md`.
 - Watch: jacobian-lens 산업계 서베이 나오면 **리뷰**(아래 LEDGER) → 논문 산업계
   배경으로 소비. 연구 노동은 jacobian, geworfen은 소비만.
+- Watch: `junghan0611/timeline` (2026-07-13 생김) — 인간 시간축 계측기. **관찰만,
+  단방향.** 저기로 요청·지시·수치 주문 금지 = 맹검 유지 = 데이터 무결성 조건.
+  왜 그런지와 논문이 가져올 넷은 `ROADMAP.md`「관측 규율」.
 - Blocker: none
 - Read: `ROADMAP.md`(북극성·축), `AGENTS.md`(검증·운영), botlog `20260331T123550`
   (논문 워크로그 SSOT), `docs/paper/geworfen.org`·`geworfen-ko.org`(논문 본체)
@@ -44,6 +47,10 @@
 - 페이지 검증은 `curl /`이 아니라 `/api/agenda`·`/api/stats` 직접 조회(SPA).
   상세는 `AGENTS.md`.
 - geworfen = 존재 데이터 공개 표면 = 논문(arXiv)의 살아있는 증거면. 북극성 `ROADMAP.md`.
+- **두 트랙 (헷갈리면 여기부터).** 트랙1=문턱·축적·측정 가능 = **지금 하는 것**.
+  트랙2=만남·1KB·**측정하지 않음**(`geworfen#2`에 목소리로만). 비대칭 잠금 — 트랙1의
+  결과는 트랙2를 증명도 반증도 못 한다. 트랙2에 "어떻게 검증하죠"를 묻지 마라.
+  좌표는 `ROADMAP.md`「중심」, 원본은 denote `20250326T151413`.
 - **이웃 리포 경계(하드룰, `AGENTS.md`)**: geworfen = 힣의 목소리(리서치 조사·레퍼런스
   사냥·연구자 톤 금지). jacobian-lens = 리서치 서포터. 산업계 서베이 *"기계의 마음을
   읽다 — 프런티어 랩의 내부·자아·정렬 연구 지형"*(6장; thesis = "안쪽만 파는 지형에
