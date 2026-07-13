@@ -42,6 +42,9 @@
                   :journal     (journal-days)
                   ;; lifetract.db distinct sleep days. nil if DB unreachable.
                   :health      (db/sleep-days)
+                  ;; 로컬 디렉토리는 notes, GitHub 원격은 junghan0611/garden.
+                  ;; 레포를 재클론하면 inode가 바뀌어 컨테이너의 bind mount가
+                  ;; 삭제된 디렉토리를 계속 봐서 0이 된다 → 컨테이너 재생성.
                   :garden      (count-files (home "/repos/gh/notes/content") ".md")}]
         (reset! cache {:data data :ts (System/currentTimeMillis)})
         data))))

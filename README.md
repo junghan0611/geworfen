@@ -7,7 +7,7 @@
 
 ![geworfen — org-agenda live on agenda.junghanacs.com](docs/screenshot.png)
 
-*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — a Clojure HTTP server, compiled with GraalVM `native-image` to a 42MB standalone binary (no JVM at runtime), running in Docker and proxying to a host-side Emacs daemon via `emacsclient` + `agent-server.el` to render org-agenda. WebTUI Catppuccin theme, GLG-Mono font.*
+*Live at [agenda.junghanacs.com](https://agenda.junghanacs.com) — a Clojure HTTP server, compiled with GraalVM `native-image` to a 72MB standalone binary (no JVM at runtime), running in Docker and proxying to a host-side Emacs daemon via `emacsclient` + `agent-server.el` to render org-agenda. WebTUI Catppuccin theme, GLG-Mono font.*
 
 > **Note on the binary.** The native binary is the **geworfen Clojure server**, not Emacs. Emacs runs separately as a daemon on the host; the Clojure binary calls it via `emacsclient`. This project exists in part to advocate **Clojure + GraalVM** as a deployment target — fast startup, low RAM, single-file distribution.
 
@@ -31,13 +31,13 @@ Past days are now bookmarkable: `?date=YYYY-MM-DD` opens any day within the ±14
 [Browser]                     [Docker Container]           [Host]
 WebTUI + Catppuccin           geworfen Clojure server      Emacs daemon
 GLG-Mono font                 compiled to GraalVM          agent-server.el
-                              native binary (43MB,
+                              native binary (72MB,
                               no JVM at runtime)
 fetch /api/agenda?date=  →    http-kit + reitit       →    emacsclient
                               per-date cache (30s/1h)      ~/org/ (agenda files)
 ```
 
-The 43MB binary is the Clojure web server only — Emacs is a separate
+The 72MB binary is the Clojure web server only — Emacs is a separate
 process on the host. The Clojure server shells out to `emacsclient`,
 which talks to the running Emacs daemon over a Unix socket.
 
@@ -114,12 +114,12 @@ geworfen is part of a larger system — one human's reproducible knowledge and c
 | [nixos-config](https://github.com/junghan0611/nixos-config) | NixOS system configuration — reproducible across 4 machines |
 | [agent-config](https://github.com/junghan0611/agent-config) | AI agent orchestration — 24 skills, semantic memory, multi-device |
 | [GLG-Mono](https://github.com/junghan0611/GLG-Mono) | Korean programming font — the font this viewer uses |
-| [notes](https://github.com/junghanacs/notes.junghanacs.com) | Digital garden — [notes.junghanacs.com](https://notes.junghanacs.com) |
+| [garden](https://github.com/junghan0611/garden) | Digital garden — [notes.junghanacs.com](https://notes.junghanacs.com) |
 
 ## Links
 
 - 📚 [Digital Garden](https://notes.junghanacs.com)
-- 🐙 [GitHub @junghanacs](https://github.com/junghanacs)
+- 🐙 [GitHub @junghan0611](https://github.com/junghan0611)
 - 🧵 [Threads](https://www.threads.net/@junghanacs)
 - 🦋 [Bluesky](https://bsky.app/profile/junghanacs.bsky.social)
 - 🐘 [Mastodon](https://fosstodon.org/@junghanacs)
