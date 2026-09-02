@@ -121,6 +121,24 @@
     .stat-label { color: var(--subtext0); }
     .stat-value { color: var(--peach); }
 
+    /* ── Footer ── */
+    #footer { margin-top: 1lh; font-size: 0.8em; color: var(--overlay1); }
+    .foot-row { display: flex; gap: 1ch; padding: 0 1ch; align-items: baseline; }
+    .foot-key {
+      color: var(--overlay2); min-width: 9ch; flex-shrink: 0;
+      text-transform: uppercase; letter-spacing: 0.1ch;
+    }
+    .foot-val { color: var(--subtext0); word-break: break-word; }
+    .foot-val a { color: var(--blue); text-decoration: none; }
+    .foot-val a:hover { color: var(--green); }
+    .foot-ver { color: var(--peach); }
+    .foot-skew { color: var(--red); }
+    .foot-built { padding: 0 1ch; color: var(--overlay2); margin-top: 0.5lh; }
+    @media (max-width: 60ch) {
+      .foot-row { flex-direction: column; gap: 0; }
+      .foot-key { min-width: 0; }
+    }
+
     .key-row { padding: 0 1ch; color: var(--overlay1); display: block; }
     .key-row kbd { color: var(--blue); }
 
@@ -197,6 +215,27 @@
 
 
   </div>
+
+  <!-- ═══ Footer ═══ -->
+  <footer id="footer">
+    <div is-="separator"></div>
+    <div class="foot-row"><span class="foot-key">runtime</span>
+      <span class="foot-val" id="foot-runtime">…</span></div>
+    <div class="foot-row"><span class="foot-key">frontend</span>
+      <span class="foot-val" id="foot-frontend">…</span></div>
+    <div class="foot-row"><span class="foot-key">source</span>
+      <span class="foot-val">org-agenda via <code>emacsclient</code> · lifetract.db (SQLite) · TZ Asia/Seoul</span></div>
+    <div class="foot-row"><span class="foot-key">links</span>
+      <span class="foot-val">
+        <a href="https://github.com/junghan0611/geworfen">source</a> ·
+        <a href="https://notes.junghanacs.com">digital garden</a> ·
+        <a href="/api/agenda">/api/agenda</a> ·
+        <a href="/api/stats">/api/stats</a> ·
+        <a href="/robots.txt">robots.txt</a>
+      </span></div>
+    <div is-="separator"></div>
+    <div class="foot-built">Built with Emacs · Org · Denote · Clojure · GraalVM <code>native-image</code> © 2026</div>
+  </footer>
 
 <script>
 let currentDate = (() => {
@@ -441,8 +480,49 @@ async function fetchStats() {
     ].filter(Boolean).map(([k,v]) =>
       `<div class="stat-row"><span class="stat-label">${k}</span><span class="stat-value">${v}</span></div>`
     ).join('');
-  } catch(e) {}
+    renderRuntime(d.versions);
+  } catch(e) { renderRuntime(null); }
 }
+
+// ── Footer: runtime versions ────────────────────────────────────────────
+// The daemon Emacs and the emacsclient binary are two independently moving
+// parts (the client is mounted into the container from the host nix store).
+// On 2026-09-02 a skew between them silently corrupted agenda payloads over
+// ~8 KB while every status light stayed green. Showing both makes that
+// visible here first. See ops/README.md in the repo.
+function renderRuntime(v) {
+  const el = document.getElementById('foot-runtime');
+  if (!el) return;
+  const server = v && v['emacs-server'];
+  const client = v && v['emacs-client'];
+  const ver = x => x ? `<span class="foot-ver">${x}</span>` : `<span class="foot-skew">unreachable</span>`;
+  const skew = server && client && server !== client;
+  el.innerHTML =
+    `Emacs ${ver(server)} <span style="color:var(--overlay2)">daemon</span>` +
+    ` · emacsclient ${ver(client)}` +
+    (skew ? ` <span class="foot-skew">⚠ version skew</span>` : '') +
+    ` · Clojure + GraalVM <code>native-image</code>`;
+}
+
+// ── Footer: frontend versions ───────────────────────────────────────────
+// Read straight off the <link> hrefs rather than hardcoding, so this line
+// cannot drift from what the page actually loaded. CDN versions are pinned
+// on purpose (@latest once pulled a mispublished theme release).
+function renderFrontend() {
+  const el = document.getElementById('foot-frontend');
+  if (!el) return;
+  const hrefs = [...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href);
+  const pick = (pkg) => {
+    const h = hrefs.find(x => x.includes(pkg + '@'));
+    const m = h && h.match(new RegExp(pkg.replace('/', '\\/') + '@([\\d.]+)'));
+    return m ? m[1] : '?';
+  };
+  el.innerHTML =
+    `WebTUI <span class="foot-ver">${pick('@webtui/css')}</span>` +
+    ` · Catppuccin <span class="foot-ver">${pick('@webtui/theme-catppuccin')}</span>` +
+    ` · GLG-Mono`;
+}
+renderFrontend();
 fetchStats();
 
 // SSH key (lazy load on popover open)

@@ -1,7 +1,8 @@
 (ns geworfen.stats
   "Existence data stats — simple file counts."
   (:require [clojure.java.io :as io]
-            [geworfen.db :as db])
+            [geworfen.db :as db]
+            [geworfen.emacs :as emacs])
   (:import [java.time LocalDate]
            [java.time.temporal ChronoUnit]))
 
@@ -45,6 +46,13 @@
                   ;; 로컬 디렉토리는 notes, GitHub 원격은 junghan0611/garden.
                   ;; 레포를 재클론하면 inode가 바뀌어 컨테이너의 bind mount가
                   ;; 삭제된 디렉토리를 계속 봐서 0이 된다 → 컨테이너 재생성.
-                  :garden      (count-files (home "/repos/gh/notes/content") ".md")}]
+                  :garden      (count-files (home "/repos/gh/notes/content") ".md")
+                  ;; 버전 표면 — footer가 그린다. 스큐가 페이지에서 보이라고 둔다
+                  ;; (2026-09-02 emacsclient/server 스큐 사건, ops/README.md).
+                  ;; 둘 다 nil 가능: 데몬이 죽어도 /api/stats 는 살아야 한다 —
+                  ;; 이 endpoint 는 emacs 무관한 것이 원래 성질이었고, 여기 붙이는
+                  ;; 두 호출은 coreutils timeout 으로 묶여 그 성질을 깨지 않는다.
+                  :versions    {:emacs-server (emacs/server-version)
+                                :emacs-client (emacs/client-version)}}]
         (reset! cache {:data data :ts (System/currentTimeMillis)})
         data))))
