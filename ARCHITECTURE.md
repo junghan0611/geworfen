@@ -138,13 +138,19 @@ same function, same view, same data.
 
 ## Emacs API Surface (agent-server)
 
-Functions used by geworfen:
+Only **one** elisp function is on a live request path. The other rows are the
+host daemon's surface that geworfen *could* call, not what it calls today —
+`grep -rn "emacs/" src/` returns exactly one hit (`agenda.clj:140`).
 
-| Function | Input | Output | Use |
-|----------|-------|--------|-----|
-| `agent-org-agenda-day` | date string or offset | formatted text | Day timeline |
-| `agent-org-agenda-week` | date string or offset | formatted text | Week view |
-| `agent-org-agenda-tags` | tag match string | formatted text | Tag filter |
+| Function | Input | Output | Use | Called by geworfen? |
+|----------|-------|--------|-----|---------------------|
+| `agent-org-agenda-day` | date string or offset | formatted text | Day timeline | **yes** — `agenda.clj:140` (the only caller) |
+| `agent-org-agenda-week` | date string or offset | formatted text | Week view | no — `emacs.clj:33` is defined but has no caller |
+| `agent-org-agenda-tags` | tag match string | formatted text | Tag filter | no — not even wrapped in `emacs.clj` |
+
+`emacs.clj/alive?` (`(+ 1 1)` ping) is likewise **uncalled** — there is no
+`/api/health` route (`server.clj:107-112`). The only live liveness probe is the
+compose healthcheck, which runs the same ping from outside the app.
 
 Future needs:
 - Date range export (batch)
