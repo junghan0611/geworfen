@@ -69,6 +69,7 @@
     .ag-cat-sched { color: var(--mauve); }
     .ag-cat-entwurf { color: var(--peach); }
     .ag-cat-cos { color: var(--teal); }
+    .ag-cat-b { color: var(--flamingo); font-weight: 700; }
     .ag-tags { color: var(--overlay1); }
     .ag-text { color: var(--text); }
 
@@ -195,6 +196,7 @@
       <span class="panel-title">public key</span>
       <div is-="separator"></div>
       <column pad-="1 1">
+        <a href="https://www.junghanacs.com">› www.junghanacs.com — public key</a>
         <a href="https://notes.junghanacs.com">› digital garden</a>
         <a href="https://github.com/junghan0611">› @junghan0611</a>
         <a href="https://www.threads.net/@junghanacs">› threads</a>
@@ -227,6 +229,7 @@
       <span class="foot-val">org-agenda via <code>emacsclient</code> · lifetract.db (SQLite) · TZ Asia/Seoul</span></div>
     <div class="foot-row"><span class="foot-key">links</span>
       <span class="foot-val">
+        <a href="https://www.junghanacs.com">www.junghanacs.com</a> ·
         <a href="https://github.com/junghan0611/geworfen">source</a> ·
         <a href="https://notes.junghanacs.com">digital garden</a> ·
         <a href="/api/agenda">/api/agenda</a> ·
@@ -345,7 +348,7 @@ function colorize(raw) {
       // Match category + padding as ONE group (preserves Emacs alignment)
       // "  Agent(T):  8:42...... text  :tags:"
       // "  Human:     5:53...... text"
-      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule|ENTWURF|COS):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
+      const catMatch = line.match(/^(\s*)((?:Agent\([A-Z]\)|Human|Diary|Schedule|ENTWURF|COS|B):\s+)(.*?)(\s+:[a-zA-Z0-9:]+:)?\s*$/);
       if (catMatch) {
         const [, indent, catWithPad, body, tags] = catMatch;
         const catName = catWithPad.match(/^(\w+(?:\([A-Z]\))?)/)[1];
@@ -360,6 +363,7 @@ function colorize(raw) {
         else if (catName === 'Diary') catSpan.className = 'ag-cat-diary';
         else if (catName === 'ENTWURF') catSpan.className = 'ag-cat-entwurf';
         else if (catName === 'COS') catSpan.className = 'ag-cat-cos';
+        else if (catName === 'B') catSpan.className = 'ag-cat-b';
         else catSpan.className = 'ag-cat-sched';
         catSpan.textContent = catWithPad;
         el.appendChild(catSpan);
